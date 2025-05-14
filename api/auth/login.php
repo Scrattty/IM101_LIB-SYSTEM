@@ -1,4 +1,17 @@
 <?php
+// Start session if not already started
+if (session_status() === PHP_SESSION_NONE) {
+    // Set session parameters
+    ini_set('session.cookie_path', '/');
+    ini_set('session.cookie_domain', '');
+    ini_set('session.cookie_secure', '0');
+    ini_set('session.cookie_httponly', '1');
+    ini_set('session.use_only_cookies', '1');
+    ini_set('session.cookie_samesite', 'Lax');
+    
+    session_start();
+}
+
 // Enable error reporting
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -14,6 +27,7 @@ header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+header("Access-Control-Allow-Credentials: true");
 
 // Handle preflight OPTIONS request
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
@@ -163,9 +177,24 @@ try {
                 exit();
             }
             
+            // Set session variables
+            $_SESSION['user_id'] = $result["user"]["user_id"];
+            $_SESSION['role'] = $result["user"]["role"];
+            $_SESSION['student_employee_id'] = $result["user"]["student_employee_id"];
+            $_SESSION['name'] = $result["user"]["first_name"] . ' ' . $result["user"]["last_name"];
+            
+            // Log session data for debugging
+            error_log("Session data after login: " . print_r($_SESSION, true));
+            error_log("Session ID: " . session_id());
+            error_log("Session cookie parameters: " . print_r(session_get_cookie_params(), true));
+            
             http_response_code(200);
             echo json_encode($result);
         } else {
+            // Clear any existing session data on failed login
+            session_unset();
+            session_destroy();
+            
             http_response_code(401);
             echo json_encode($result);
         }

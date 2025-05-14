@@ -137,6 +137,7 @@ document.addEventListener('DOMContentLoaded', function() {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
           },
+          credentials: 'include',
           body: JSON.stringify(loginData)
         };
         
@@ -170,6 +171,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (data.status === 'success') {
           console.log('Login successful, redirecting...');
           localStorage.setItem('currentUser', JSON.stringify(data.user));
+          
+          // Log session cookie for debugging
+          console.log('Cookies after login:', document.cookie);
           
           if (data.user.role === 'admin') {
             window.location.href = '/LIB/admin/dashboard.html';

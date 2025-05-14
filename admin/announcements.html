@@ -56,84 +56,57 @@
       position: relative;
       display: flex;
       align-items: center;
-      gap: 8px;
-      background: white;
-      padding: 8px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      transition: all 0.3s ease;
+      width: 300px;
     }
 
-    .search-wrapper:focus-within {
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      border-color: #3b82f6;
-    }
-
-    .search-container {
+    .search-box {
       position: relative;
-      flex: 1;
+      width: 100%;
+      display: flex;
+      align-items: center;
     }
 
-    .search-container input {
+    .search-input {
       width: 100%;
-      padding: 8px 12px 8px 35px; /* Added left padding for icon */
+      padding: 8px 35px 8px 12px;
       border: 1px solid #e2e8f0;
       border-radius: 4px;
       font-size: 14px;
       transition: all 0.3s ease;
     }
 
-    .search-container input:focus {
+    .search-input:focus {
       outline: none;
       border-color: #3b82f6;
-      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
     }
 
     .search-icon {
       position: absolute;
-      left: 10px;
+      right: 10px;
       top: 50%;
       transform: translateY(-50%);
       color: #64748b;
       pointer-events: none;
-      transition: color 0.3s ease;
-    }
-
-    .search-container input:focus + .search-icon {
-      color: #3b82f6;
-    }
-
-    .search-type {
-      padding: 8px 12px;
-      border: 1px solid #e2e8f0;
-      border-radius: 4px;
-      font-size: 14px;
-      background-color: white;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .search-type:focus {
-      outline: none;
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
     }
 
     .clear-search {
-      background-color: #ef4444;
-      color: white;
+      position: absolute;
+      right: 35px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
       border: none;
-      padding: 8px;
-      border-radius: 4px;
+      color: #64748b;
       cursor: pointer;
-      transition: all 0.3s ease;
+      padding: 4px;
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: color 0.3s ease;
     }
 
     .clear-search:hover {
-      background-color: #dc2626;
+      color: #ef4444;
     }
 
     .search-highlight {
@@ -159,6 +132,135 @@
       color: #666;
       font-style: italic;
       display: none;
+    }
+
+    /* Modal styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+    }
+
+    .modal-content {
+      position: relative;
+      background-color: #fff;
+      margin: 10% auto;
+      padding: 20px;
+      width: 90%;
+      max-width: 500px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      color: #1f2937;
+      font-size: 1.5rem;
+    }
+
+    .close-modal {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: #6b7280;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .close-modal:hover {
+      background-color: #f3f4f6;
+      color: #1f2937;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    /* Button styles */
+    .btn {
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      font-size: 14px;
+    }
+
+    .btn-primary {
+      background-color: #2563eb;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: #1d4ed8;
+    }
+
+    .btn-secondary {
+      background-color: #f3f4f6;
+      color: #1f2937;
+      border: 1px solid #d1d5db;
+    }
+
+    .btn-secondary:hover {
+      background-color: #e5e7eb;
+    }
+
+    .btn-danger {
+      background-color: #dc2626;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background-color: #b91c1c;
+    }
+
+    /* Form styles */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #374151;
+      font-weight: 500;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      font-size: 14px;
+      transition: border-color 0.2s;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
     }
   </style>
 </head>
@@ -188,13 +290,13 @@
       <header class="top-nav">
         <div class="search-container">
           <div class="search-wrapper">
-            <select id="searchType" class="search-type">
-              <option value="all">All Types</option>
-              <option value="Important">Important</option>
-              <option value="General">General</option>
-              <option value="Events">Events</option>
-              <option value="Maintenance">Maintenance</option>
-            </select>
+            <div class="search-box">
+              <i class="fas fa-search search-icon"></i>
+              <input type="text" id="searchInput" placeholder="Search announcements..." class="search-input">
+              <button id="clearSearch" class="clear-search" style="display: none;">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
           </div>
         </div>
         
@@ -245,26 +347,7 @@
         <!-- Announcement List -->
         <section class="announcement-list">
           <h2>Existing Announcements</h2>
-
-          <div class="announcement-card">
-            <span class="tag important">Important</span>
-            <p class="date">Sep 20, 2023</p>
-            <h3>Library Hours Extended During Finals Week</h3>
-            <p>Library will remain open until midnight from October 1-15 to accommodate students during finals week.</p>
-            <p><strong>Posted by:</strong> Library Administration</p>
-            <button class="btn edit">Edit</button>
-            <button class="btn delete">Delete</button>
-          </div>
-
-          <div class="announcement-card">
-            <span class="tag general">General</span>
-            <p class="date">Sep 15, 2023</p>
-            <h3>New Books Added to Collection</h3>
-            <p>We've added 50 new titles to our technology section including programming and AI books.</p>
-            <p><strong>Posted by:</strong> Library Staff</p>
-            <button class="btn edit">Edit</button>
-            <button class="btn delete">Delete</button>
-          </div>
+          <!-- Announcements will be dynamically loaded here -->
         </section>
 
         <div class="no-results" id="noResults">
@@ -566,143 +649,90 @@
         });
       }
 
-      // Get all announcement cards and add event listeners
-      function initializeAnnouncementButtons() {
-        const editButtons = document.querySelectorAll('.announcement-card .edit');
-        const deleteButtons = document.querySelectorAll('.announcement-card .delete');
-
-        editButtons.forEach(button => {
-          button.addEventListener('click', function() {
-            const card = this.closest('.announcement-card');
-            const announcementId = card.dataset.announcementId;
-            const type = card.querySelector('.tag').textContent;
-            const title = card.querySelector('h3').textContent;
-            const content = card.querySelector('p:nth-of-type(2)').textContent;
-
-            // Populate edit modal
-            document.getElementById('edit-announcement-id').value = announcementId;
-            document.getElementById('edit-type').value = type;
-            document.getElementById('edit-title').value = title;
-            document.getElementById('edit-content').value = content;
-
-            // Show edit modal
-            document.getElementById('edit-announcement-modal').style.display = 'block';
-          });
-        });
-
-        deleteButtons.forEach(button => {
-          button.addEventListener('click', function() {
-            const card = this.closest('.announcement-card');
-            const announcementId = card.dataset.announcementId;
-            
-            // Show confirmation modal
-            const deleteModal = document.getElementById('delete-confirmation-modal');
-            document.getElementById('confirm-delete').dataset.id = announcementId;
-            deleteModal.style.display = 'block';
-          });
+      // Function to format date
+      function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
         });
       }
 
-      // Save edited announcement
-      document.getElementById('save-announcement').addEventListener('click', function() {
-        const id = document.getElementById('edit-announcement-id').value;
-        const type = document.getElementById('edit-type').value;
-        const title = document.getElementById('edit-title').value.trim();
-        const content = document.getElementById('edit-content').value.trim();
+      // Function to create announcement card
+      function createAnnouncementCard(announcement) {
+        const card = document.createElement('div');
+        card.className = 'announcement-card';
+        card.dataset.announcementId = announcement.announcement_id;
+        
+        card.innerHTML = `
+          <span class="tag ${announcement.type.toLowerCase()}">${announcement.type}</span>
+          <p class="date">${formatDate(announcement.created_at)}</p>
+          <h3>${announcement.title}</h3>
+          <p>${announcement.content}</p>
+          <p><strong>Posted by:</strong> ${announcement.posted_by}</p>
+          <button class="btn edit"><i class="fas fa-edit"></i> Edit</button>
+          <button class="btn delete"><i class="fas fa-trash-alt"></i> Delete</button>
+        `;
+        
+        return card;
+      }
 
-        if (!title || !content) {
-          alert('Please fill in all required fields.');
-          return;
-        }
-
-        // Get the announcement card
-        const card = document.querySelector(`[data-announcement-id="${id}"]`);
-        if (card) {
-          // Update card content
-          card.querySelector('.tag').className = `tag ${type.toLowerCase()}`;
-          card.querySelector('.tag').textContent = type;
-          card.querySelector('h3').textContent = title;
-          card.querySelector('p:nth-of-type(2)').textContent = content;
-          card.querySelector('.date').textContent = new Date().toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric'
-          });
-
-          // Update localStorage
-          let announcements = JSON.parse(localStorage.getItem('announcements')) || [];
-          const index = announcements.findIndex(a => a.id === id);
-          if (index !== -1) {
-            announcements[index] = {
-              ...announcements[index],
-              type: type,
-              title: title,
-              content: content,
-              date: new Date().toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-              })
-            };
-            localStorage.setItem('announcements', JSON.stringify(announcements));
+      // Function to load announcements
+      async function loadAnnouncements() {
+        try {
+          const response = await fetch('../api/announcements.php');
+          const responseText = await response.text();
+          
+          if (!responseText) {
+            throw new Error('Empty response from server');
           }
-
-          // Close modal
-          document.getElementById('edit-announcement-modal').style.display = 'none';
-          alert('Announcement updated successfully!');
+          
+          // Try to parse the response as JSON
+          let announcements;
+          try {
+            announcements = JSON.parse(responseText);
+          } catch (parseError) {
+            console.error('Failed to parse response as JSON');
+            throw new Error('Invalid JSON response from server');
+          }
+          
+          if (!response.ok) {
+            throw new Error(announcements.error || `Server returned ${response.status}`);
+          }
+          
+          if (!Array.isArray(announcements)) {
+            throw new Error('Invalid response format from server');
+          }
+          
+          const announcementList = document.querySelector('.announcement-list');
+          announcementList.innerHTML = '<h2>Existing Announcements</h2>';
+          
+          if (announcements.length === 0) {
+            document.getElementById('noResults').style.display = 'block';
+            return;
+          }
+          
+          document.getElementById('noResults').style.display = 'none';
+          announcements.forEach(announcement => {
+            const card = createAnnouncementCard(announcement);
+            announcementList.appendChild(card);
+          });
+          
+          initializeAnnouncementButtons();
+        } catch (error) {
+          console.error('Error loading announcements:', error);
+          alert('Failed to load announcements: ' + error.message);
         }
-      });
+      }
 
-      // Confirm delete
-      document.getElementById('confirm-delete').addEventListener('click', function() {
-        const id = this.dataset.id;
-        const card = document.querySelector(`[data-announcement-id="${id}"]`);
-        
-        if (card) {
-          // Remove from localStorage
-      let announcements = JSON.parse(localStorage.getItem('announcements')) || [];
-          announcements = announcements.filter(a => a.id !== id);
-          localStorage.setItem('announcements', JSON.stringify(announcements));
-
-          // Remove card from UI
-          card.remove();
-
-          // Close modal
-          document.getElementById('delete-confirmation-modal').style.display = 'none';
-          alert('Announcement deleted successfully!');
-        }
-      });
-
-      // Close modals when clicking outside
-      window.addEventListener('click', function(event) {
-        const editModal = document.getElementById('edit-announcement-modal');
-        const deleteModal = document.getElementById('delete-confirmation-modal');
-        
-        if (event.target === editModal) {
-          editModal.style.display = 'none';
-        }
-        if (event.target === deleteModal) {
-          deleteModal.style.display = 'none';
-        }
-      });
-
-      // Close modal buttons
-      document.querySelectorAll('.close-modal').forEach(button => {
-        button.addEventListener('click', function() {
-          const editModal = document.getElementById('edit-announcement-modal');
-          const deleteModal = document.getElementById('delete-confirmation-modal');
-          editModal.style.display = 'none';
-          deleteModal.style.display = 'none';
-        });
-      });
-
-      // Initialize buttons for existing announcements
-      initializeAnnouncementButtons();
+      // Load announcements on page load
+      loadAnnouncements();
 
       // Add new announcement
       const announcementForm = document.getElementById('announcementForm');
       if (announcementForm) {
-        announcementForm.addEventListener('submit', function(e) {
+        announcementForm.addEventListener('submit', async function(e) {
           e.preventDefault();
           
           const type = document.getElementById('type').value;
@@ -713,106 +743,328 @@
             alert('Please fill in all required fields.');
             return;
           }
-          
-          const newAnnouncement = {
-            id: Date.now().toString(),
-            type: type,
-            title: title,
-            content: content,
-            date: new Date().toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'short',
-              day: 'numeric'
-            }),
-            postedBy: JSON.parse(localStorage.getItem('currentUser'))?.name || 'Library Staff'
-          };
-          
-          // Add to localStorage
-          let announcements = JSON.parse(localStorage.getItem('announcements')) || [];
-          announcements.unshift(newAnnouncement);
-          localStorage.setItem('announcements', JSON.stringify(announcements));
-          
-          // Create and add new card
-          const card = document.createElement('div');
-          card.className = 'announcement-card';
-          card.dataset.announcementId = newAnnouncement.id;
-          
-          card.innerHTML = `
-            <span class="tag ${type.toLowerCase()}">${type}</span>
-            <p class="date">${newAnnouncement.date}</p>
-            <h3>${title}</h3>
-            <p>${content}</p>
-            <p><strong>Posted by:</strong> ${newAnnouncement.postedBy}</p>
-            <button class="btn edit"><i class="fas fa-edit"></i> Edit</button>
-            <button class="btn delete"><i class="fas fa-trash-alt"></i> Delete</button>
-          `;
-          
-          // Add to UI
-          const announcementList = document.querySelector('.announcement-list');
-          announcementList.insertBefore(card, announcementList.firstChild);
-          
-          // Add event listeners to new buttons
-          const editBtn = card.querySelector('.edit');
-          const deleteBtn = card.querySelector('.delete');
-          
-          editBtn.addEventListener('click', function() {
+
+          try {
+            const response = await fetch('../api/announcements.php', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+              },
+              credentials: 'include',
+              body: JSON.stringify({ type, title, content })
+            });
+            
+            const responseText = await response.text();
+            
+            if (!response.ok) {
+              let errorMessage = 'Failed to create announcement';
+              try {
+                const errorData = JSON.parse(responseText);
+                errorMessage = errorData.error || errorMessage;
+              } catch (e) {
+                console.error('Error parsing error response');
+              }
+              throw new Error(errorMessage);
+            }
+            
+            let responseData;
+            try {
+              responseData = JSON.parse(responseText);
+              if (responseData.status === 'success' && responseData.data) {
+                const card = createAnnouncementCard(responseData.data);
+                const announcementList = document.querySelector('.announcement-list');
+                announcementList.insertBefore(card, announcementList.firstChild);
+                
+                initializeAnnouncementButtons();
+                announcementForm.reset();
+                alert('Announcement posted successfully!');
+              } else {
+                throw new Error(responseData.message || 'Invalid response format');
+              }
+            } catch (parseError) {
+              throw new Error('Invalid response from server');
+            }
+          } catch (error) {
+            console.error('Error creating announcement:', error);
+            alert('Failed to create announcement: ' + error.message);
+          }
+        });
+      }
+
+      // Function to initialize announcement buttons
+      function initializeAnnouncementButtons() {
+        const editButtons = document.querySelectorAll('.announcement-card .edit');
+        const deleteButtons = document.querySelectorAll('.announcement-card .delete');
+        const editModal = document.getElementById('edit-announcement-modal');
+        const deleteModal = document.getElementById('delete-confirmation-modal');
+        const closeModalButtons = document.querySelectorAll('.close-modal');
+
+        // Close modal functions
+        function closeEditModal() {
+          editModal.style.display = 'none';
+        }
+
+        function closeDeleteModal() {
+          deleteModal.style.display = 'none';
+        }
+
+        // Close modal event listeners
+        closeModalButtons.forEach(button => {
+          button.addEventListener('click', function() {
+            if (this.closest('#edit-announcement-modal')) {
+              closeEditModal();
+            } else if (this.closest('#delete-confirmation-modal')) {
+              closeDeleteModal();
+            }
+          });
+        });
+
+        // Close modals when clicking outside
+        editModal.addEventListener('click', function(e) {
+          if (e.target === editModal) {
+            closeEditModal();
+          }
+        });
+
+        deleteModal.addEventListener('click', function(e) {
+          if (e.target === deleteModal) {
+            closeDeleteModal();
+          }
+        });
+
+        // Add click handler for cancel button in delete modal
+        const cancelDeleteButton = deleteModal.querySelector('.btn-secondary');
+        if (cancelDeleteButton) {
+          cancelDeleteButton.addEventListener('click', closeDeleteModal);
+        }
+
+        editButtons.forEach(button => {
+          button.addEventListener('click', function() {
+            const card = this.closest('.announcement-card');
+            const announcementId = card.dataset.announcementId;
             const type = card.querySelector('.tag').textContent;
             const title = card.querySelector('h3').textContent;
             const content = card.querySelector('p:nth-of-type(2)').textContent;
             
-            document.getElementById('edit-announcement-id').value = newAnnouncement.id;
+            // Populate edit modal
+            document.getElementById('edit-announcement-id').value = announcementId;
             document.getElementById('edit-type').value = type;
             document.getElementById('edit-title').value = title;
             document.getElementById('edit-content').value = content;
             
-            document.getElementById('edit-announcement-modal').style.display = 'block';
+            // Show edit modal
+            editModal.style.display = 'block';
           });
-          
-          deleteBtn.addEventListener('click', function() {
-            document.getElementById('confirm-delete').dataset.id = newAnnouncement.id;
-            document.getElementById('delete-confirmation-modal').style.display = 'block';
+        });
+
+        deleteButtons.forEach(button => {
+          button.addEventListener('click', function() {
+            const card = this.closest('.announcement-card');
+            const announcementId = card.dataset.announcementId;
+            
+            // Show confirmation modal
+            document.getElementById('confirm-delete').dataset.id = announcementId;
+            deleteModal.style.display = 'block';
           });
-          
-          // Reset form
-          announcementForm.reset();
-          alert('Announcement posted successfully!');
         });
       }
 
-      // Get the filter elements
-      const searchType = document.getElementById('searchType');
+      // Save edited announcement
+      document.getElementById('save-announcement').addEventListener('click', async function() {
+        const id = document.getElementById('edit-announcement-id').value;
+        const type = document.getElementById('edit-type').value;
+        const title = document.getElementById('edit-title').value.trim();
+        const content = document.getElementById('edit-content').value.trim();
+
+        if (!title || !content) {
+          alert('Please fill in all required fields.');
+          return;
+        }
+
+        try {
+          const response = await fetch('../api/announcements.php', {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+              announcement_id: parseInt(id),
+              type,
+              title,
+              content
+            })
+          });
+          
+          const responseText = await response.text();
+          
+          if (!response.ok) {
+            let errorMessage = 'Failed to update announcement';
+            try {
+              const errorData = JSON.parse(responseText);
+              errorMessage = errorData.error || errorMessage;
+            } catch (e) {
+              console.error('Error parsing error response');
+            }
+            throw new Error(errorMessage);
+          }
+          
+          let responseData;
+          try {
+            responseData = JSON.parse(responseText);
+            if (responseData.status === 'success' && responseData.data) {
+              const card = document.querySelector(`[data-announcement-id="${id}"]`);
+              if (card) {
+                const newCard = createAnnouncementCard(responseData.data);
+                card.replaceWith(newCard);
+                initializeAnnouncementButtons();
+              }
+              
+              document.getElementById('edit-announcement-modal').style.display = 'none';
+              alert('Announcement updated successfully!');
+            } else {
+              throw new Error(responseData.message || 'Invalid response format');
+            }
+          } catch (parseError) {
+            throw new Error('Invalid response from server');
+          }
+        } catch (error) {
+          console.error('Error updating announcement:', error);
+          alert(error.message || 'Failed to update announcement. Please try again later.');
+        }
+      });
+
+      // Confirm delete
+      document.getElementById('confirm-delete').addEventListener('click', async function() {
+        const id = this.dataset.id;
+        const deleteModal = document.getElementById('delete-confirmation-modal');
+        
+        try {
+          const response = await fetch(`../api/announcements.php?id=${id}`, {
+            method: 'DELETE',
+            headers: {
+              'Accept': 'application/json'
+            },
+            credentials: 'include'
+          });
+          
+          const responseText = await response.text();
+          
+          if (!response.ok) {
+            let errorMessage = 'Failed to delete announcement';
+            try {
+              const errorData = JSON.parse(responseText);
+              errorMessage = errorData.error || errorMessage;
+            } catch (e) {
+              console.error('Error parsing error response');
+            }
+            throw new Error(errorMessage);
+          }
+          
+          let responseData;
+          try {
+            responseData = JSON.parse(responseText);
+            if (responseData.status === 'success') {
+              const card = document.querySelector(`[data-announcement-id="${id}"]`);
+              if (card) {
+                card.remove();
+              }
+              
+              deleteModal.style.display = 'none';
+              alert('Announcement deleted successfully!');
+              
+              loadAnnouncements();
+            } else {
+              throw new Error(responseData.message || 'Invalid response format');
+            }
+          } catch (parseError) {
+            throw new Error('Invalid response from server');
+          }
+        } catch (error) {
+          console.error('Error deleting announcement:', error);
+          alert(error.message || 'Failed to delete announcement. Please try again later.');
+        }
+      });
+
+      // Get the search elements
+      const searchInput = document.getElementById('searchInput');
+      const clearSearchBtn = document.getElementById('clearSearch');
       const announcementList = document.querySelector('.announcement-list');
 
-      // Function to filter announcements by type
-      function filterAnnouncements() {
-        const selectedType = searchType.value;
+      // Function to search announcements
+      function searchAnnouncements() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
         const cards = document.querySelectorAll('.announcement-card');
         let hasResults = false;
 
         cards.forEach(card => {
-          const type = card.querySelector('.tag').textContent;
+          const title = card.querySelector('h3').textContent.toLowerCase();
+          const content = card.querySelector('p:nth-of-type(2)').textContent.toLowerCase();
+          const type = card.querySelector('.tag').textContent.toLowerCase();
+          const postedBy = card.querySelector('p:last-child').textContent.toLowerCase();
           
-          // Show or hide the card based on type
-          if (selectedType === 'all' || type === selectedType) {
+          const matches = title.includes(searchTerm) || 
+                        content.includes(searchTerm) || 
+                        type.includes(searchTerm) || 
+                        postedBy.includes(searchTerm);
+
+          if (matches) {
             card.style.display = '';
             hasResults = true;
+
+            // Highlight matching text if search term exists
+            if (searchTerm) {
+              highlightText(card, searchTerm);
+            } else {
+              removeHighlights(card);
+            }
           } else {
             card.style.display = 'none';
+            removeHighlights(card);
           }
         });
 
-        // Show or hide the no results message
+        // Show/hide clear search button
+        clearSearchBtn.style.display = searchTerm ? 'block' : 'none';
+
+        // Show/hide no results message
         const noResults = document.getElementById('noResults');
         if (noResults) {
           noResults.style.display = hasResults ? 'none' : 'block';
         }
       }
 
-      // Add event listener for type filter
-      searchType.addEventListener('change', filterAnnouncements);
+      // Function to highlight matching text
+      function highlightText(card, searchTerm) {
+        const elements = card.querySelectorAll('h3, p');
+        elements.forEach(element => {
+          const text = element.textContent;
+          const regex = new RegExp(`(${searchTerm})`, 'gi');
+          element.innerHTML = text.replace(regex, '<span class="search-highlight">$1</span>');
+        });
+      }
 
-      // Initial filter to set up the view
-      filterAnnouncements();
+      // Function to remove highlights
+      function removeHighlights(card) {
+        const elements = card.querySelectorAll('h3, p');
+        elements.forEach(element => {
+          element.innerHTML = element.textContent;
+        });
+      }
+
+      // Add event listeners for search
+      searchInput.addEventListener('input', searchAnnouncements);
+      
+      clearSearchBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        clearSearchBtn.style.display = 'none';
+        searchAnnouncements();
+      });
+
+      // Initial search to set up the view
+      searchAnnouncements();
     });
   </script>
 </body>
