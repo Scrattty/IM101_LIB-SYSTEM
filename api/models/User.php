@@ -17,6 +17,8 @@ class User {
     public $profile_image;
     public $created_at;
     public $updated_at;
+    public $current_password;
+    public $new_password;
 
     public function __construct($db) {
         $this->conn = $db;
@@ -282,6 +284,146 @@ class User {
             return $deleteStmt->execute();
         } catch (PDOException $e) {
             throw new Exception("Database error: " . $e->getMessage());
+        }
+    }
+
+    // Update user profile
+    public function updateProfile() {
+        try {
+            // First verify the current password
+            $query = "SELECT password FROM " . $this->table_name . " WHERE user_id = :user_id";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(":user_id", $this->user_id);
+            $stmt->execute();
+
+            if ($stmt->rowCount() === 0) {
+                return array(
+                    "status" => "error",
+                    "message" => "User not found"
+                );
+            }
+
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!password_verify($this->current_password, $row['password'])) {
+                return array(
+                    "status" => "error",
+                    "message" => "Current password is incorrect"
+                );
+            }
+
+            // Validate new password if provided
+            if (!empty($this->new_password)) {
+                // Check password length
+                if (strlen($this->new_password) < 8) {
+                    return array(
+                        "status" => "error",
+                        "message" => "New password must be at least 8 characters long"
+                    );
+                }
+
+                // Check for at least one uppercase letter
+                if (!preg_match('/[A-Z]/', $this->new_password)) {
+                    return array(
+                        "status" => "error",
+                        "message" => "New password must contain at least one uppercase letter"
+                    );
+                }
+
+                // Check for at least one lowercase letter
+                if (!preg_match('/[a-z]/', $this->new_password)) {
+                    return array(
+                        "status" => "error",
+                        "message" => "New password must contain at least one lowercase letter"
+                    );
+                }
+
+                // Check for at least one number
+                if (!preg_match('/[0-9]/', $this->new_password)) {
+                    return array(
+                        "status" => "error",
+                        "message" => "New password must contain at least one number"
+                    );
+                }
+
+                // Check for at least one special character
+                if (!preg_match('/[!@#$%^&*()\-_=+{};:,<.>]/', $this->new_password)) {
+                    return array(
+                        "status" => "error",
+                        "message" => "New password must contain at least one special character (!@#$%^&*()-_=+{};:,<.>)"
+                    );
+                }
+            }
+
+            // Check if email is already taken by another user
+            if (!empty($this->email)) {
+                $query = "SELECT user_id FROM " . $this->table_name . " 
+                         WHERE email = :email AND user_id != :user_id";
+                $stmt = $this->conn->prepare($query);
+                $stmt->bindParam(":email", $this->email);
+                $stmt->bindParam(":user_id", $this->user_id);
+                $stmt->execute();
+
+                if ($stmt->rowCount() > 0) {
+                    return array(
+                        "status" => "error",
+                        "message" => "Email is already taken by another user"
+                    );
+                }
+            }
+
+            // Prepare update query
+            $query = "UPDATE " . $this->table_name . "
+                     SET last_name = :last_name,
+                         first_name = :first_name,
+                         middle_name = :middle_name,
+                         email = :email";
+
+            // Add password update if new password is provided
+            if (!empty($this->new_password)) {
+                $query .= ", password = :password";
+            }
+
+            $query .= " WHERE user_id = :user_id";
+
+            $stmt = $this->conn->prepare($query);
+
+            // Sanitize inputs
+            $this->last_name = htmlspecialchars(strip_tags($this->last_name));
+            $this->first_name = htmlspecialchars(strip_tags($this->first_name));
+            $this->middle_name = htmlspecialchars(strip_tags($this->middle_name));
+            $this->email = htmlspecialchars(strip_tags($this->email));
+
+            // Bind parameters
+            $stmt->bindParam(":last_name", $this->last_name);
+            $stmt->bindParam(":first_name", $this->first_name);
+            $stmt->bindParam(":middle_name", $this->middle_name);
+            $stmt->bindParam(":email", $this->email);
+            $stmt->bindParam(":user_id", $this->user_id);
+
+            // Bind new password if provided
+            if (!empty($this->new_password)) {
+                $hashed_password = password_hash($this->new_password, PASSWORD_DEFAULT);
+                $stmt->bindParam(":password", $hashed_password);
+            }
+
+            if ($stmt->execute()) {
+                return array(
+                    "status" => "success",
+                    "message" => "Profile updated successfully"
+                );
+            }
+
+            return array(
+                "status" => "error",
+                "message" => "Unable to update profile"
+            );
+
+        } catch(PDOException $e) {
+            error_log("Error in updateProfile: " . $e->getMessage());
+            return array(
+                "status" => "error",
+                "message" => "Database error: " . $e->getMessage()
+            );
         }
     }
 }

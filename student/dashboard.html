@@ -214,7 +214,16 @@
             <div class="form-group">
               <label for="profile-new-password">New Password</label>
               <input type="password" id="profile-new-password" class="form-control" minlength="8">
-              <p class="help-text">Leave blank to keep current password. Minimum 8 characters.</p>
+              <div class="password-requirements">
+                <p class="help-text">Password must meet the following requirements:</p>
+                <ul class="requirements-list">
+                  <li id="req-length"><i class="fas fa-times"></i> At least 8 characters long</li>
+                  <li id="req-uppercase"><i class="fas fa-times"></i> At least one uppercase letter</li>
+                  <li id="req-lowercase"><i class="fas fa-times"></i> At least one lowercase letter</li>
+                  <li id="req-number"><i class="fas fa-times"></i> At least one number</li>
+                  <li id="req-special"><i class="fas fa-times"></i> At least one special character (!@#$%^&*()-_=+{};:,<.>)</li>
+                </ul>
+              </div>
             </div>
           </form>
         </div>
@@ -580,6 +589,145 @@
 
       // Load announcements when the page loads
       loadAnnouncements();
+
+      // Handle edit profile button click
+      const editProfileBtn = document.getElementById('edit-profile');
+      const profileModal = document.getElementById('profile-modal');
+      
+      if (editProfileBtn && profileModal) {
+        editProfileBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          
+          // Get current user data from localStorage
+          const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+          if (!currentUser) {
+            console.error('No user data found');
+            return;
+          }
+
+          // Populate the form with user data
+          document.getElementById('profile-id').value = currentUser.student_employee_id || '';
+          document.getElementById('profile-lastname').value = currentUser.last_name || '';
+          document.getElementById('profile-firstname').value = currentUser.first_name || '';
+          document.getElementById('profile-middlename').value = currentUser.middle_name || '';
+          document.getElementById('profile-email').value = currentUser.email || '';
+          
+          // Clear password fields
+          document.getElementById('profile-current-password').value = '';
+          document.getElementById('profile-new-password').value = '';
+
+          // Show the modal
+          profileModal.classList.add('active');
+        });
+      }
+
+      // Handle cancel profile edit
+      const cancelProfileEdit = document.getElementById('cancel-profile-edit');
+      if (cancelProfileEdit) {
+        cancelProfileEdit.addEventListener('click', function() {
+          profileModal.classList.remove('active');
+        });
+      }
+
+      // Handle save profile
+      const saveProfileBtn = document.getElementById('save-profile');
+      if (saveProfileBtn) {
+        saveProfileBtn.addEventListener('click', async function(e) {
+          e.preventDefault();
+          
+          // Get form data
+          const formData = {
+            student_employee_id: document.getElementById('profile-id').value,
+            last_name: document.getElementById('profile-lastname').value,
+            first_name: document.getElementById('profile-firstname').value,
+            middle_name: document.getElementById('profile-middlename').value,
+            email: document.getElementById('profile-email').value,
+            current_password: document.getElementById('profile-current-password').value,
+            new_password: document.getElementById('profile-new-password').value
+          };
+
+          try {
+            const response = await fetch('../api/auth/update-profile.php', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+              },
+              credentials: 'include',
+              body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+              // Update localStorage with new user data
+              const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+              Object.assign(currentUser, {
+                last_name: formData.last_name,
+                first_name: formData.first_name,
+                middle_name: formData.middle_name,
+                email: formData.email
+              });
+              localStorage.setItem('currentUser', JSON.stringify(currentUser));
+              
+              // Update displayed name
+              document.getElementById('user-name').textContent = 
+                `${currentUser.first_name} ${currentUser.last_name}`;
+              
+              // Close modal and show success message
+              profileModal.classList.remove('active');
+              alert('Profile updated successfully!');
+            } else {
+              alert(data.message || 'Failed to update profile');
+            }
+          } catch (error) {
+            console.error('Error updating profile:', error);
+            alert('An error occurred while updating your profile');
+          }
+        });
+      }
+
+      // Add password validation for profile update
+      const newPasswordInput = document.getElementById('profile-new-password');
+      if (newPasswordInput) {
+        newPasswordInput.addEventListener('input', function() {
+          const password = this.value;
+          
+          // Check length
+          const lengthValid = password.length >= 8;
+          updateRequirement('req-length', lengthValid);
+          
+          // Check uppercase
+          const hasUpper = /[A-Z]/.test(password);
+          updateRequirement('req-uppercase', hasUpper);
+          
+          // Check lowercase
+          const hasLower = /[a-z]/.test(password);
+          updateRequirement('req-lowercase', hasLower);
+          
+          // Check number
+          const hasNumber = /[0-9]/.test(password);
+          updateRequirement('req-number', hasNumber);
+          
+          // Check special character
+          const hasSpecial = /[!@#$%^&*()\-_=+{};:,<.>]/.test(password);
+          updateRequirement('req-special', hasSpecial);
+        });
+      }
+
+      function updateRequirement(id, isValid) {
+        const element = document.getElementById(id);
+        if (element) {
+          const icon = element.querySelector('i');
+          if (isValid) {
+            icon.className = 'fas fa-check';
+            element.classList.add('valid');
+          } else {
+            icon.className = 'fas fa-times';
+            element.classList.remove('valid');
+          }
+        }
+      }
     });
   </script>
 
@@ -640,6 +788,112 @@
       border-bottom: none;
       margin-bottom: 0;
       padding-bottom: 0;
+    }
+
+    /* Add these styles for the profile modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+    }
+
+    .modal.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background-color: white;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .profile-photo-container {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .profile-photo-container img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 10px;
+    }
+
+    .photo-upload {
+      margin-top: 10px;
+    }
+
+    .disabled-field {
+      position: relative;
+    }
+
+    .disabled-field i {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+    }
+
+    .name-fields {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+    }
+
+    .help-text {
+      font-size: 0.875rem;
+      color: #64748b;
+      margin-top: 4px;
+    }
+
+    .password-requirements {
+      margin-top: 8px;
+      padding: 10px;
+      background-color: #f8f9fa;
+      border-radius: 4px;
+    }
+
+    .requirements-list {
+      list-style: none;
+      padding: 0;
+      margin: 8px 0 0 0;
+    }
+
+    .requirements-list li {
+      font-size: 0.875rem;
+      color: #64748b;
+      margin: 4px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .requirements-list li i {
+      font-size: 0.75rem;
+    }
+
+    .requirements-list li i.fa-times {
+      color: #dc2626;
+    }
+
+    .requirements-list li i.fa-check {
+      color: #059669;
+    }
+
+    .requirements-list li.valid {
+      color: #059669;
     }
   </style>
 </body>
