@@ -31,7 +31,6 @@
           <li>
             <a href="room-reservation.html"><i class="fas fa-door-open"></i> Room Reservation</a>
           </li>
-
           <li>
             <a href="announcements.html"><i class="fas fa-bullhorn"></i> Announcements</a>
           </li>
@@ -414,7 +413,7 @@
     </div>
   </div>
 
-  <script src="../../js/student.js"></script>
+  <script src="../js/student.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       // Initialize user data
@@ -439,17 +438,122 @@
         }
       }
 
+      // Modal Elements
+      const closeModalButtons = document.querySelectorAll('.close-modal');
+      const requestModal = document.getElementById('request-modal');
+      const successModal = document.getElementById('success-modal');
+      const profileModal = document.getElementById('profile-modal');
+      
+      // Book Request Modal Elements
+      const requestButtons = document.querySelectorAll('.request-btn');
+      const confirmRequestBtn = document.getElementById('confirm-request');
+      const termsAgreement = document.getElementById('terms-agreement');
+      const pickupDateContainer = document.getElementById('pickup-date-container');
+      const emailContainer = document.getElementById('email-container');
+
+      // Function to close all modals
+      function closeModals() {
+        requestModal.style.display = 'none';
+        successModal.style.display = 'none';
+        profileModal.classList.remove('active');
+      }
+
+      // Close modal when clicking close buttons
+      closeModalButtons.forEach(button => {
+        button.addEventListener('click', closeModals);
+      });
+
+      // Close modal when clicking outside
+      window.addEventListener('click', function(e) {
+        if (e.target === requestModal || e.target === successModal || e.target === profileModal) {
+          closeModals();
+        }
+      });
+
+      // Book Request Modal Functionality
+      function openRequestModal(bookData) {
+        // Set minimum date to today
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('pickup-date').min = today;
+        
+        // Populate modal with book data
+        document.getElementById('modal-book-cover').src = bookData.cover;
+        document.getElementById('modal-book-title').textContent = bookData.title;
+        document.getElementById('modal-book-author').textContent = bookData.author;
+        document.getElementById('modal-book-type').textContent = bookData.type === 'ebook' ? 'E-Book' : 'Physical Book';
+        
+        // Show/hide appropriate containers based on book type
+        if (bookData.type === 'ebook') {
+          pickupDateContainer.style.display = 'none';
+          emailContainer.style.display = 'block';
+        } else {
+          pickupDateContainer.style.display = 'block';
+          emailContainer.style.display = 'none';
+        }
+        
+        // Reset form
+        document.getElementById('request-notes').value = '';
+        document.getElementById('pickup-date').value = '';
+        termsAgreement.checked = false;
+        confirmRequestBtn.disabled = true;
+        
+        // Show modal
+        requestModal.style.display = 'block';
+      }
+
+      // Add click handlers for request buttons
+      requestButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const bookData = {
+            id: this.dataset.bookId,
+            title: this.dataset.bookTitle,
+            author: this.dataset.bookAuthor,
+            cover: this.dataset.bookCover,
+            type: this.dataset.bookType
+          };
+          openRequestModal(bookData);
+        });
+      });
+
+      // Enable/disable confirm button based on terms agreement
+      termsAgreement.addEventListener('change', function() {
+        confirmRequestBtn.disabled = !this.checked;
+      });
+
+      // Handle request submission
+      confirmRequestBtn.addEventListener('click', function() {
+        const bookType = document.getElementById('modal-book-type').textContent;
+        const pickupDate = document.getElementById('pickup-date').value;
+        const notes = document.getElementById('request-notes').value;
+        
+        // Validate pickup date for physical books
+        if (bookType === 'Physical Book' && !pickupDate) {
+          alert('Please select a pickup date for physical books.');
+          return;
+        }
+
+        // Show success modal with appropriate message
+        const successMessage = document.getElementById('success-message');
+        if (bookType === 'E-Book') {
+          successMessage.textContent = 'The download link will be sent to your email shortly.';
+        } else {
+          successMessage.textContent = `Please pick up your book on ${pickupDate}.`;
+        }
+
+        // Hide request modal and show success modal
+        requestModal.style.display = 'none';
+        successModal.style.display = 'block';
+      });
+
       // Edit Profile Modal Functionality
       const editProfileBtn = document.getElementById('edit-profile');
-      const profileModal = document.getElementById('profile-modal');
-      const closeModalButtons = document.querySelectorAll('.close-modal');
       const cancelProfileEdit = document.getElementById('cancel-profile-edit');
       const saveProfileBtn = document.getElementById('save-profile');
       const profilePhoto = document.getElementById('profile-photo');
       const profilePreview = document.getElementById('profile-preview');
       const userProfileImg = document.getElementById('user-profile-img');
 
-      // Open modal
+      // Open profile modal
       if (editProfileBtn && profileModal) {
         editProfileBtn.addEventListener('click', function(e) {
           e.preventDefault();
