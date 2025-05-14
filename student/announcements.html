@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Announcements - Library Management System</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/student.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="../assets/logo.png" alt="Library Logo" class="sidebar-logo">
+        <h3>Library System</h3>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <ul>
+          <li>
+            <a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+          </li>
+          <li>
+            <a href="transactions.html"><i class="fas fa-exchange-alt"></i> Transactions</a>
+          </li>
+          <li>
+            <a href="book-request.html"><i class="fas fa-book"></i> Book Request</a>
+          </li>
+          <li>
+            <a href="room-reservation.html"><i class="fas fa-door-open"></i> Room Reservation</a>
+          </li>
+          <li>
+            <a href="reservations.html"><i class="fas fa-calendar-check"></i> My Reservations</a>
+          </li>
+          <li class="active">
+            <a href="announcements.html"><i class="fas fa-bullhorn"></i> Announcements</a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Navigation -->
+      <header class="top-nav">
+        <div class="search-container">
+          <input type="text" placeholder="Search announcements...">
+          <button type="button"><i class="fas fa-search"></i></button>
+        </div>
+        
+        <div class="user-menu">
+          <div class="notifications">
+            <button class="icon-btn"><i class="fas fa-bell"></i></button>
+          </div>
+          
+          <div class="profile-dropdown">
+            <button class="profile-toggle">
+              <img src="../assets/images/default-profile.png" alt="Profile" id="user-profile-img">
+              <span id="user-name">John Doe</span>
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            
+            <div class="dropdown-menu">
+              <a href="#" id="edit-profile"><i class="fas fa-user-edit"></i> Edit Profile</a>
+              <a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+          </div>
+        </div>
+      </header>
+      
+      <!-- Content Area -->
+      <div class="content">
+        <h1 class="page-title">Announcements</h1>
+        
+        <!-- Filter Tabs -->
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="all">All</button>
+          <button class="tab-btn" data-tab="general">General</button>
+          <button class="tab-btn" data-tab="events">Events</button>
+          <button class="tab-btn" data-tab="maintenance">Maintenance</button>
+        </div>
+        
+        <!-- Announcements List -->
+        <div class="announcement-list">
+          <!-- Important Announcement -->
+          <div class="announcement-item important">
+            <div class="announcement-header">
+              <div class="announcement-meta">
+                <span class="announcement-category">Important</span>
+                <span class="announcement-date">Sep 20, 2023</span>
+              </div>
+              <h3>Library Hours Extended During Finals Week</h3>
+            </div>
+            <div class="announcement-content">
+              <p>The library will remain open until midnight from October 1-15 to accommodate students during finals week. All services will be available during extended hours.</p>
+              <ul>
+                <li>Extended Hours: 7:00 AM - 12:00 MN</li>
+                <li>All study rooms will be available for reservation</li>
+                <li>Additional staff will be on duty to assist students</li>
+              </ul>
+              <div class="announcement-footer">
+                <span class="announcement-author">Posted by: Library Administration</span>
+                <button class="btn btn-link">Read More</button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Regular Announcement -->
+          <div class="announcement-item">
+            <div class="announcement-header">
+              <div class="announcement-meta">
+                <span class="announcement-category">General</span>
+                <span class="announcement-date">Sep 15, 2023</span>
+              </div>
+              <h3>New Books Added to Collection</h3>
+            </div>
+            <div class="announcement-content">
+              <p>We've added 50 new titles to our technology section. New additions include the latest editions of popular programming books and artificial intelligence resources.</p>
+              <div class="announcement-footer">
+                <span class="announcement-author">Posted by: Library Staff</span>
+                <button class="btn btn-link">Read More</button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Event Announcement -->
+          <div class="announcement-item">
+            <div class="announcement-header">
+              <div class="announcement-meta">
+                <span class="announcement-category">Events</span>
+                <span class="announcement-date">Sep 10, 2023</span>
+              </div>
+              <h3>Workshop: Research Paper Writing</h3>
+            </div>
+            <div class="announcement-content">
+              <p>Join us for a workshop on effective research paper writing. Learn proper citation methods, research techniques, and academic writing best practices.</p>
+              <div class="event-details">
+                <div class="event-info">
+                  <i class="fas fa-calendar"></i>
+                  <span>September 25, 2023</span>
+                </div>
+                <div class="event-info">
+                  <i class="fas fa-clock"></i>
+                  <span>2:00 PM - 4:00 PM</span>
+                </div>
+                <div class="event-info">
+                  <i class="fas fa-map-marker-alt"></i>
+                  <span>Library Conference Room</span>
+                </div>
+              </div>
+              <div class="announcement-footer">
+                <span class="announcement-author">Posted by: Research Department</span>
+                <button class="btn btn-primary">Register Now</button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Maintenance Announcement -->
+          <div class="announcement-item">
+            <div class="announcement-header">
+              <div class="announcement-meta">
+                <span class="announcement-category">Maintenance</span>
+                <span class="announcement-date">Sep 5, 2023</span>
+              </div>
+              <h3>System Maintenance Notice</h3>
+            </div>
+            <div class="announcement-content">
+              <p>The library management system will undergo scheduled maintenance this weekend. Online services will be temporarily unavailable.</p>
+              <div class="maintenance-schedule">
+                <p><strong>Date:</strong> September 23, 2023</p>
+                <p><strong>Time:</strong> 10:00 PM - 2:00 AM</p>
+                <p><strong>Services Affected:</strong> Online catalog, room reservations, and book requests</p>
+              </div>
+              <div class="announcement-footer">
+                <span class="announcement-author">Posted by: IT Department</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Pagination -->
+        <div class="pagination">
+          <button class="pagination-btn"><i class="fas fa-chevron-left"></i></button>
+          <button class="pagination-btn active">1</button>
+          <button class="pagination-btn">2</button>
+          <button class="pagination-btn">3</button>
+          <span class="pagination-ellipsis">...</span>
+          <button class="pagination-btn">10</button>
+          <button class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Edit Profile Modal -->
+  <div class="modal" id="profile-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Edit Profile</h2>
+        <button class="close-modal">&times;</button>
+      </div>
+      
+      <div class="modal-body">
+        <form id="profile-form">
+          <div class="profile-photo-container">
+            <img src="../assets/images/default-profile.png" alt="Profile Photo" id="profile-preview">
+            <div class="photo-upload">
+              <label for="profile-photo" class="btn btn-secondary">
+                <i class="fas fa-camera"></i> Change Photo
+              </label>
+              <input type="file" id="profile-photo" accept="image/*" hidden>
+              <p class="help-text">Max file size: 2MB. Supported formats: JPG, PNG</p>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="profile-id">Student/Employee Number</label>
+            <div class="disabled-field">
+              <input type="text" id="profile-id" class="form-control" disabled readonly>
+              <i class="fas fa-lock"></i>
+            </div>
+            <p class="help-text">This is your permanent identification number and cannot be changed</p>
+          </div>
+          
+          <div class="form-group">
+            <label>Name</label>
+            <div class="name-fields">
+              <div class="form-group">
+                <input type="text" id="profile-lastname" class="form-control" placeholder="Last Name" required>
+              </div>
+              <div class="form-group">
+                <input type="text" id="profile-firstname" class="form-control" placeholder="First Name" required>
+              </div>
+              <div class="form-group">
+                <input type="text" id="profile-middlename" class="form-control" placeholder="Middle Name (Optional)">
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="profile-email">Email Address</label>
+            <input type="email" id="profile-email" class="form-control" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="profile-current-password">Current Password</label>
+            <input type="password" id="profile-current-password" class="form-control" required>
+            <p class="help-text">Enter your current password to confirm changes</p>
+          </div>
+          
+          <div class="form-group">
+            <label for="profile-new-password">New Password</label>
+            <input type="password" id="profile-new-password" class="form-control" minlength="8">
+            <p class="help-text">Leave blank to keep current password. Minimum 8 characters.</p>
+          </div>
+        </form>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancel-profile-edit">Cancel</button>
+        <button class="btn btn-primary" id="save-profile" form="profile-form">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/student.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get all tab buttons and announcements
+      const tabButtons = document.querySelectorAll('.tab-btn');
+      const announcements = document.querySelectorAll('.announcement-item');
+      const searchInput = document.querySelector('.search-container input');
+      const searchButton = document.querySelector('.search-container button');
+
+      // Function to filter announcements based on category and search text
+      function filterAnnouncements(category, searchText = '') {
+        searchText = searchText.toLowerCase().trim();
+        
+        announcements.forEach(announcement => {
+          const announcementCategory = announcement.querySelector('.announcement-category').textContent.toLowerCase();
+          const announcementTitle = announcement.querySelector('h3').textContent.toLowerCase();
+          const announcementContent = announcement.querySelector('.announcement-content p').textContent.toLowerCase();
+          
+          // Check if announcement matches search text
+          const matchesSearch = searchText === '' || 
+            announcementTitle.includes(searchText) || 
+            announcementContent.includes(searchText);
+          
+          // Check if announcement matches category
+          const matchesCategory = category === 'all' || announcementCategory === category.toLowerCase();
+          
+          // Show/hide announcement based on both filters
+          if (matchesSearch && matchesCategory) {
+            announcement.style.display = 'block';
+            // Add animation
+            announcement.style.animation = 'fadeIn 0.3s ease-in-out';
+          } else {
+            announcement.style.display = 'none';
+          }
+        });
+
+        // Update active tab button
+        tabButtons.forEach(btn => {
+          if (btn.dataset.tab === category) {
+            btn.classList.add('active');
+          } else {
+            btn.classList.remove('active');
+          }
+        });
+
+        // Update pagination after filtering
+        updatePagination();
+      }
+
+      // Add click event listeners to tab buttons
+      tabButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const category = this.dataset.tab;
+          filterAnnouncements(category, searchInput.value);
+        });
+      });
+
+      // Add search functionality
+      searchInput.addEventListener('input', function() {
+        const activeCategory = document.querySelector('.tab-btn.active').dataset.tab;
+        filterAnnouncements(activeCategory, this.value);
+      });
+
+      searchButton.addEventListener('click', function() {
+        const activeCategory = document.querySelector('.tab-btn.active').dataset.tab;
+        filterAnnouncements(activeCategory, searchInput.value);
+      });
+
+      // Function to update pagination based on visible announcements
+      function updatePagination() {
+        const visibleAnnouncements = Array.from(announcements).filter(
+          announcement => announcement.style.display !== 'none'
+        );
+        const itemsPerPage = 5; // Number of announcements per page
+        const totalPages = Math.ceil(visibleAnnouncements.length / itemsPerPage);
+        
+        // Update pagination buttons
+        const paginationContainer = document.querySelector('.pagination');
+        if (paginationContainer) {
+          let paginationHTML = `
+            <button class="pagination-btn" data-page="prev"><i class="fas fa-chevron-left"></i></button>
+          `;
+
+          for (let i = 1; i <= totalPages; i++) {
+            paginationHTML += `
+              <button class="pagination-btn ${i === 1 ? 'active' : ''}" data-page="${i}">${i}</button>
+            `;
+          }
+
+          paginationHTML += `
+            <button class="pagination-btn" data-page="next"><i class="fas fa-chevron-right"></i></button>
+          `;
+
+          paginationContainer.innerHTML = paginationHTML;
+
+          // Add event listeners to pagination buttons
+          const paginationButtons = paginationContainer.querySelectorAll('.pagination-btn');
+          paginationButtons.forEach(button => {
+            button.addEventListener('click', function() {
+              const page = this.dataset.page;
+              if (page === 'prev') {
+                const currentPage = parseInt(document.querySelector('.pagination-btn.active').dataset.page);
+                if (currentPage > 1) {
+                  showPage(currentPage - 1);
+                }
+              } else if (page === 'next') {
+                const currentPage = parseInt(document.querySelector('.pagination-btn.active').dataset.page);
+                if (currentPage < totalPages) {
+                  showPage(currentPage + 1);
+                }
+              } else {
+                showPage(parseInt(page));
+              }
+            });
+          });
+        }
+
+        // Show first page by default
+        showPage(1);
+      }
+
+      // Function to show specific page of announcements
+      function showPage(page) {
+        const visibleAnnouncements = Array.from(announcements).filter(
+          announcement => announcement.style.display !== 'none'
+        );
+        const itemsPerPage = 5;
+        const start = (page - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+
+        // Hide all announcements first
+        announcements.forEach(announcement => {
+          if (announcement.style.display !== 'none') {
+            announcement.style.display = 'none';
+          }
+        });
+
+        // Show announcements for current page
+        visibleAnnouncements.slice(start, end).forEach(announcement => {
+          announcement.style.display = 'block';
+          announcement.style.animation = 'fadeIn 0.3s ease-in-out';
+        });
+
+        // Update active pagination button
+        const paginationButtons = document.querySelectorAll('.pagination-btn');
+        paginationButtons.forEach(btn => {
+          btn.classList.remove('active');
+          if (btn.dataset.page === page.toString()) {
+            btn.classList.add('active');
+          }
+        });
+      }
+
+      // Initialize with 'all' category
+      filterAnnouncements('all');
+    });
+  </script>
+</body>
+</html>

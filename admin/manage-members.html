@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Members - Library Management System</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/admin.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="../assets/logo.png" alt="Library Logo" class="sidebar-logo">
+        <h3>Library System</h3>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <ul>
+          <li>
+            <a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+          </li>
+          <li class="active">
+            <a href="manage-members.html"><i class="fas fa-users"></i> Manage Members</a>
+          </li>
+          <li>
+            <a href="manage-books.html"><i class="fas fa-book"></i> Manage Books</a>
+          </li>
+          <li>
+            <a href="book-requests.html"><i class="fas fa-book-reader"></i> Book Requests</a>
+          </li>
+          <li>
+            <a href="room-requests.html"><i class="fas fa-door-open"></i> Room Requests</a>
+          </li>
+          <li>
+            <a href="announcements.html"><i class="fas fa-bullhorn"></i> Announcements</a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Navigation -->
+      <header class="top-nav">
+        <div class="search-container">
+          <input type="text" id="member-search" placeholder="Search...">
+          <button type="button"><i class="fas fa-search"></i></button>
+        </div>
+        <div class="user-menu">
+          <div class="notifications">
+            <button class="icon-btn"><i class="fas fa-bell"></i></button>
+          </div>
+          <div class="profile-dropdown">
+            <button class="profile-toggle">
+              <img src="../assets/images/default-profile.png" alt="Profile" id="user-profile-img">
+              <span id="user-name">Admin User</span>
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="dropdown-menu">
+              <a href="#" id="edit-profile"><i class="fas fa-user-edit"></i> Edit Profile</a>
+              <a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+          </div>
+        </div>
+      </header>
+      <div class="content-wrapper">
+        <section class="section-header">
+          <h1>Manage Members</h1>
+        </section>
+
+        <!-- Students -->
+        <section class="section">
+          <div class="section-title">
+            <h2><i class="fas fa-user-graduate"></i> Students</h2>
+            <button onclick="openModal('studentModal')">
+              <i class="fas fa-plus"></i> Add Student
+            </button>
+          </div>
+          <div class="table-container">
+            <table id="studentTable">
+              <thead>
+                <tr>
+                  <th>Student Number</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Year</th>
+                  <th>Course</th>
+                  <th>Section</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Student rows will be loaded from database -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Faculty -->
+        <section class="section">
+          <div class="section-title">
+            <h2><i class="fas fa-chalkboard-teacher"></i> Faculty/Staff</h2>
+            <button onclick="openModal('facultyModal')">
+              <i class="fas fa-plus"></i> Add Faculty
+            </button>
+          </div>
+          <div class="table-container">
+            <table id="facultyTable">
+              <thead>
+                <tr>
+                  <th>Employee Number</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Faculty rows will be loaded from database -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- Student Modal -->
+  <div class="modal" id="studentModal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('studentModal')">&times;</span>
+      <h2><i class="fas fa-user-graduate"></i> <span id="studentModalTitle">Add Student</span></h2>
+      <form id="studentForm" onsubmit="return handleStudentSubmit(event)">
+        <div class="form-group">
+          <label for="studentNumber">Student Number</label>
+          <input type="text" id="studentNumber" placeholder="e.g., 2023-0001" pattern="[0-9-]+" required 
+                 onkeypress="return validateStudentNumber(event)" 
+                 oninvalid="this.setCustomValidity('Please enter a valid student number (numbers and hyphens only)')"
+                 oninput="this.setCustomValidity('')" />
+          <small class="error-message" id="studentNumberError"></small>
+        </div>
+        
+        <div class="form-group">
+          <label for="studentName">Full Name</label>
+          <input type="text" id="studentName" placeholder="Full Name" required 
+                 onkeypress="return validateName(event)"
+                 oninvalid="this.setCustomValidity('Please enter a valid name (letters and spaces only)')"
+                 oninput="this.setCustomValidity('')" />
+          <small class="error-message" id="studentNameError"></small>
+        </div>
+        
+        <div class="form-group">
+          <label for="studentYear">Year</label>
+          <input type="text" id="studentYear" placeholder="Year Level" required 
+                 pattern="[1-4]"
+                 onkeypress="return validateYear(event)"
+                 oninvalid="this.setCustomValidity('Please enter a valid year (1-4)')"
+                 oninput="this.setCustomValidity('')" />
+          <small class="error-message" id="studentYearError"></small>
+        </div>
+        
+        <div class="form-group">
+          <label for="studentCourse">Course</label>
+          <select id="studentCourse" required>
+            <option value="">Select Course</option>
+            <option value="CCS">BS Computer Science</option>
+            <option value="IT">BS Information Technology</option>
+            <option value="IS">BS Information Systems</option>
+            <option value="CE">BS Computer Engineering</option>
+            <option value="IE">BS Industrial Engineering</option>
+            <option value="EE">BS Electrical Engineering</option>
+            <option value="BSA">BS Accountancy</option>
+            <option value="BSE">BS Entrepreneurship</option>
+            <option value="BECED">BS Early Childhood Education</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="studentSection">Section</label>
+          <select id="studentSection" required>
+            <option value="">Select Section</option>
+            <option value="A">Section A</option>
+            <option value="B">Section B</option>
+            <option value="C">Section C</option>
+            <option value="D">Section D</option>
+            <option value="E">Section E</option>
+          </select>
+        </div>
+        
+        <button type="submit" id="studentSubmitBtn">Add Student</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Faculty Modal -->
+  <div class="modal" id="facultyModal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('facultyModal')">&times;</span>
+      <h2><i class="fas fa-chalkboard-teacher"></i> <span id="facultyModalTitle">Add Faculty/Staff</span></h2>
+      <form id="facultyForm" onsubmit="return handleFacultySubmit(event)">
+        <div class="form-group">
+          <label for="employeeNumber">Employee Number</label>
+          <input type="text" id="employeeNumber" placeholder="e.g., EMP-0001" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="facultyName">Full Name</label>
+          <input type="text" id="facultyName" placeholder="Full Name" required>
+        </div>
+        
+        <button type="submit" id="facultySubmitBtn">Add Faculty</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Profile Edit Modal -->
+  <div class="modal" id="profile-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Edit Profile</h2>
+        <button class="close-modal">&times;</button>
+      </div>
+      
+      <div class="modal-body">
+        <form id="profile-form">
+          <div class="profile-photo-container">
+            <img src="../assets/images/default-profile.png" alt="Profile Photo" id="profile-preview">
+            <div class="photo-upload">
+              <label for="profile-photo" class="btn btn-secondary">
+                <i class="fas fa-camera"></i> Change Photo
+              </label>
+              <input type="file" id="profile-photo" name="profile_image" accept="image/*" hidden>
+              <p class="help-text">Max file size: 2MB. Supported formats: JPG, PNG</p>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="profile-id">Student/Employee Number</label>
+            <div class="disabled-field">
+              <input type="text" id="profile-id" class="form-control" disabled readonly>
+              <i class="fas fa-lock"></i>
+            </div>
+            <p class="help-text">This is your permanent identification number and cannot be changed</p>
+          </div>
+          
+          <div class="form-group">
+            <label>Name</label>
+            <div class="name-fields">
+              <div class="form-group">
+                <input type="text" id="profile-lastname" class="form-control" placeholder="Last Name" required>
+              </div>
+              <div class="form-group">
+                <input type="text" id="profile-firstname" class="form-control" placeholder="First Name" required>
+              </div>
+              <div class="form-group">
+                <input type="text" id="profile-middlename" class="form-control" placeholder="Middle Name (Optional)">
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="profile-email">Email Address</label>
+            <input type="email" id="profile-email" class="form-control" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="profile-current-password">Current Password</label>
+            <input type="password" id="profile-current-password" class="form-control" required>
+            <p class="help-text">Enter your current password to confirm changes</p>
+          </div>
+          
+          <div class="form-group">
+            <label for="profile-new-password">New Password</label>
+            <input type="password" id="profile-new-password" class="form-control" minlength="8">
+            <p class="help-text">Leave blank to keep current password. Minimum 8 characters.</p>
+          </div>
+        </form>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancel-profile-edit">Cancel</button>
+        <button class="btn btn-primary" id="save-profile" form="profile-form">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Validation functions
+    function validateStudentNumber(event) {
+      // Allow only numbers and hyphens
+      return /[0-9-]/.test(event.key) || event.key === 'Backspace' || event.key === 'Delete';
+    }
+    
+    function validateName(event) {
+      // Allow only letters and spaces
+      return /[a-zA-Z\s]/.test(event.key) || event.key === 'Backspace' || event.key === 'Delete';
+    }
+    
+    function validateYear(event) {
+      // Allow only numbers 1-4
+      return /[1-4]/.test(event.key) || event.key === 'Backspace' || event.key === 'Delete';
+    }
+    
+    // Modal functions
+    function openModal(modalId) {
+      document.getElementById(modalId).style.display = 'flex';
+    }
+    
+    function closeModal(modalId) {
+      document.getElementById(modalId).style.display = 'none';
+    }
+    
+    // Handle student form submit
+    function handleStudentSubmit(event) {
+      event.preventDefault();
+      
+      const form = event.target;
+      
+      // Get form values
+      const studentData = {
+        number: form.studentNumber.value,
+        name: form.studentName.value,
+        year: form.studentYear.value,
+        course: form.studentCourse.value,
+        section: form.studentSection.value
+      };
+      
+      // Here you would typically send this data to the server via API
+      // For now, we'll just close the modal
+      
+      // Reset form and close modal
+      form.reset();
+      document.getElementById('studentModalTitle').textContent = 'Add Student';
+      document.getElementById('studentSubmitBtn').textContent = 'Add Student';
+      closeModal('studentModal');
+      
+      // Refresh the user lists from the database
+      loadUsersFromDatabase();
+      
+      return false;
+    }
+
+    function handleFacultySubmit(event) {
+      event.preventDefault();
+      
+      const form = event.target;
+      
+      // Get form values
+      const facultyData = {
+        number: form.employeeNumber.value,
+        name: form.facultyName.value
+      };
+      
+      // Here you would typically send this data to the server via API
+      // For now, we'll just close the modal
+      
+      // Reset form and close modal
+      form.reset();
+      document.getElementById('facultyModalTitle').textContent = 'Add Faculty/Staff';
+      document.getElementById('facultySubmitBtn').textContent = 'Add Faculty';
+      closeModal('facultyModal');
+      
+      // Refresh the user lists from the database
+      loadUsersFromDatabase();
+      
+      return false;
+    }
+
+    // Add delete functionality
+    function deleteStudent(button) {
+      const row = button.closest('tr');
+      const userId = row.getAttribute('data-id');
+      const studentName = row.cells[2].textContent; // Get the student's name for confirmation
+      
+      // Show confirmation dialog
+      if (confirm(`Are you sure you want to delete the student "${studentName}"? This action cannot be undone.`)) {
+        // Call API to delete user from database
+        fetch('../api/users/delete.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ user_id: userId })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            // Remove the row from the table on successful deletion
+            row.remove();
+            alert('Student deleted successfully.');
+          } else {
+            alert('Error deleting student: ' + data.message);
+          }
+        })
+        .catch(error => {
+          console.error('Error deleting student:', error);
+          alert('An error occurred while deleting the student. Please try again.');
+        });
+      }
+    }
+
+    // Add delete functionality for faculty
+    function deleteFaculty(button) {
+      const row = button.closest('tr');
+      const userId = row.getAttribute('data-id');
+      const facultyName = row.cells[2].textContent; // Get the faculty member's name for confirmation
+      
+      // Show confirmation dialog
+      if (confirm(`Are you sure you want to delete the faculty member "${facultyName}"? This action cannot be undone.`)) {
+        // Call API to delete user from database
+        fetch('../api/users/delete.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ user_id: userId })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            // Remove the row from the table on successful deletion
+            row.remove();
+            alert('Faculty member deleted successfully.');
+          } else {
+            alert('Error deleting faculty member: ' + data.message);
+          }
+        })
+        .catch(error => {
+          console.error('Error deleting faculty member:', error);
+          alert('An error occurred while deleting the faculty member. Please try again.');
+        });
+      }
+    }
+
+    // Function to load users from database
+    function loadUsersFromDatabase() {
+      // Clear existing table rows
+      const studentTableBody = document.querySelector('#studentTable tbody');
+      const facultyTableBody = document.querySelector('#facultyTable tbody');
+      studentTableBody.innerHTML = '';
+      facultyTableBody.innerHTML = '';
+      
+      // Fetch users from API
+      fetch('../api/users/list.php')
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === 'success') {
+            // Process each user
+            data.users.forEach(user => {
+              // Format name
+              const fullName = `${user.last_name}, ${user.first_name} ${user.middle_name || ''}`;
+              
+              // Create row based on user role (exclude admin users)
+              if (user.role === 'student') {
+                const tr = document.createElement('tr');
+                tr.setAttribute('data-id', user.user_id);
+                tr.innerHTML = `
+                  <td>${user.student_employee_id || ''}</td>
+                  <td>${fullName}</td>
+                  <td>${user.email || ''}</td>
+                  <td>${user.year_level || ''}</td>
+                  <td>${user.course || ''}</td>
+                  <td>${user.section || ''}</td>
+                  <td>
+                    <button type="button" class="delete" onclick="deleteStudent(this)"><i class="fas fa-trash-alt"></i> Delete</button>
+                  </td>
+                `;
+                studentTableBody.appendChild(tr);
+              } else if (user.role === 'faculty') {
+                const tr = document.createElement('tr');
+                tr.setAttribute('data-id', user.user_id);
+                tr.innerHTML = `
+                  <td>${user.student_employee_id || ''}</td>
+                  <td>${fullName}</td>
+                  <td>${user.email || ''}</td>
+                  <td>
+                    <button type="button" class="delete" onclick="deleteFaculty(this)"><i class="fas fa-trash-alt"></i> Delete</button>
+                  </td>
+                `;
+                facultyTableBody.appendChild(tr);
+              }
+              // Admin users are excluded
+            });
+            
+            // Update search functionality
+            setupSearchFunctionality();
+          } else {
+            console.error('Error loading users:', data.message);
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching users:', error);
+        });
+    }
+
+    // Member search functionality
+    function setupSearchFunctionality() {
+      const searchInput = document.getElementById('member-search');
+      if (searchInput) {
+        searchInput.addEventListener('input', function() {
+          const searchTerm = this.value.toLowerCase();
+          
+          // Search students
+          document.querySelectorAll('#studentTable tbody tr').forEach(row => {
+            row.style.display = Array.from(row.cells).some(cell =>
+              cell.textContent.toLowerCase().includes(searchTerm)
+            ) ? '' : 'none';
+          });
+          
+          // Search faculty
+          document.querySelectorAll('#facultyTable tbody tr').forEach(row => {
+            row.style.display = Array.from(row.cells).some(cell =>
+              cell.textContent.toLowerCase().includes(searchTerm)
+            ) ? '' : 'none';
+          });
+        });
+      }
+    }
+  </script>
+
+  <script src="../js/admin.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize user data
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      if (currentUser) {
+        // Update user name in the header
+        const userNameElements = document.querySelectorAll('#user-name');
+        userNameElements.forEach(element => {
+          element.textContent = `${currentUser.first_name} ${currentUser.last_name}` || 'User';
+        });
+        
+        // Update profile image if exists
+        const userProfileImg = document.getElementById('user-profile-img');
+        if (userProfileImg) {
+          if (currentUser.profile_image) {
+            userProfileImg.src = '../' + currentUser.profile_image;
+          } else {
+            userProfileImg.src = `../assets/images/default-profile.php?name=${encodeURIComponent(currentUser.first_name)}`;
+          }
+        }
+      }
+
+      // Edit Profile Modal Functionality
+      const editProfileBtn = document.getElementById('edit-profile');
+      const profileModal = document.getElementById('profile-modal');
+      const closeModalButtons = document.querySelectorAll('.close-modal');
+      const cancelProfileEdit = document.getElementById('cancel-profile-edit');
+      const saveProfileBtn = document.getElementById('save-profile');
+      const profilePhoto = document.getElementById('profile-photo');
+      const profilePreview = document.getElementById('profile-preview');
+      const userProfileImg = document.getElementById('user-profile-img');
+
+      // Open modal
+      if (editProfileBtn && profileModal) {
+        editProfileBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          console.log('Edit profile button clicked in manage members page');
+          
+          // Get current user data
+          const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+          if (!currentUser) {
+            console.error('No user data found in localStorage');
+            return;
+          }
+          
+          // Populate modal with user data
+          document.getElementById('profile-id').value = currentUser.student_employee_id || '';
+          document.getElementById('profile-lastname').value = currentUser.last_name || '';
+          document.getElementById('profile-firstname').value = currentUser.first_name || '';
+          document.getElementById('profile-middlename').value = currentUser.middle_name || '';
+          document.getElementById('profile-email').value = currentUser.email || '';
+          
+          // Set profile image if exists
+          if (currentUser.profile_image) {
+            profilePreview.src = '../' + currentUser.profile_image;
+          } else {
+            profilePreview.src = `../assets/images/default-profile.php?name=${encodeURIComponent(currentUser.first_name)}`;
+          }
+          
+          // Show modal
+          profileModal.classList.add('active');
+        });
+      }
+
+      // Close modal function
+      function closeProfileModal() {
+        profileModal.classList.remove('active');
+        // Clear password fields
+        document.getElementById('profile-current-password').value = '';
+        document.getElementById('profile-new-password').value = '';
+      }
+
+      // Close modal event listeners
+      if (closeModalButtons.length > 0) {
+        closeModalButtons.forEach(button => {
+          button.addEventListener('click', closeProfileModal);
+        });
+      }
+
+      if (cancelProfileEdit) {
+        cancelProfileEdit.addEventListener('click', closeProfileModal);
+      }
+
+      // Close modal when clicking outside
+      profileModal.addEventListener('click', function(e) {
+        if (e.target === profileModal) {
+          closeProfileModal();
+        }
+      });
+
+      // Profile photo upload
+      if (profilePhoto && profilePreview) {
+        profilePhoto.addEventListener('change', function() {
+          const file = this.files[0];
+          if (file) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+              const imageData = e.target.result;
+              profilePreview.src = imageData;
+            };
+            
+            reader.readAsDataURL(file);
+          }
+        });
+      }
+
+      // Save profile changes
+      if (saveProfileBtn) {
+        saveProfileBtn.addEventListener('click', function() {
+          // Get form fields
+          const lastName = document.getElementById('profile-lastname').value.trim();
+          const firstName = document.getElementById('profile-firstname').value.trim();
+          const middleName = document.getElementById('profile-middlename').value.trim();
+          const email = document.getElementById('profile-email').value.trim();
+          const currentPassword = document.getElementById('profile-current-password').value;
+          const newPassword = document.getElementById('profile-new-password').value;
+          
+          // Validation
+          if (!lastName || !firstName || !email || !currentPassword) {
+            alert('Please fill in all required fields.');
+            return;
+          }
+          
+          // Email validation
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(email)) {
+            alert('Please enter a valid email address.');
+            return;
+          }
+          
+          // Get current user data
+          const currentUser = JSON.parse(localStorage.getItem('currentUser')) || {};
+          
+          // Create FormData object for file upload
+          const formData = new FormData(document.getElementById('profile-form'));
+          
+          // Add user ID (required for API)
+          formData.append('user_id', currentUser.user_id);
+          
+          // Add profile data to form
+          formData.append('last_name', lastName);
+          formData.append('first_name', firstName);
+          formData.append('middle_name', middleName);
+          formData.append('email', email);
+          formData.append('current_password', currentPassword);
+          
+          // Add new password if provided
+          if (newPassword) {
+            formData.append('new_password', newPassword);
+          }
+          
+          // Send update request to API
+          fetch('../api/users/update_profile.php', {
+            method: 'POST',
+            body: formData // FormData automatically sets the correct Content-Type
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.status === 'success') {
+              // Update local storage with new user data
+              if (data.user) {
+                Object.assign(currentUser, data.user);
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+              }
+              
+              // Update displayed name
+              const userNameElements = document.querySelectorAll('#user-name');
+              userNameElements.forEach(element => {
+                element.textContent = `${firstName} ${lastName}`;
+              });
+              
+              // Update profile image if it exists in the response
+              if (data.user && data.user.profile_image) {
+                const userProfileImg = document.getElementById('user-profile-img');
+                if (userProfileImg) {
+                  userProfileImg.src = '../' + data.user.profile_image;
+                }
+              }
+              
+              // Show success message
+              alert('Profile updated successfully!');
+              
+              // Close modal and clear fields
+              closeProfileModal();
+              
+              // Refresh user lists
+              loadUsersFromDatabase();
+            } else {
+              alert('Error: ' + data.message);
+            }
+          })
+          .catch(error => {
+            console.error('Error updating profile:', error);
+            alert('An error occurred while updating your profile. Please try again.');
+          });
+        });
+      }
+
+      // Load users on page load
+      loadUsersFromDatabase();
+    });
+  </script>
+</body>
+</html>

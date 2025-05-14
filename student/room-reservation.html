@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Room Reservation - Library Management System</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/student.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <style>
+    /* Add styles for member count */
+    .member-count-bar {
+      background-color: #f5f5f5;
+      padding: 8px 12px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      text-align: center;
+      font-weight: bold;
+    }
+    
+    /* Error validation styles */
+    .form-text {
+      font-size: 0.85rem;
+      color: #6c757d;
+      margin-top: 4px;
+    }
+    
+    .form-error {
+      color: #dc3545;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="../assets/logo.png" alt="Library Logo" class="sidebar-logo">
+        <h3>Library System</h3>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <ul>
+          <li>
+            <a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+          </li>
+          <li>
+            <a href="transactions.html"><i class="fas fa-exchange-alt"></i> Transactions</a>
+          </li>
+          <li>
+            <a href="book-request.html"><i class="fas fa-book"></i> Book Request</a>
+          </li>
+          <li class="active">
+            <a href="room-reservation.html"><i class="fas fa-door-open"></i> Room Reservation</a>
+          </li>
+          <li>
+            <a href="announcements.html"><i class="fas fa-bullhorn"></i> Announcements</a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Navigation -->
+      <header class="top-nav">
+        <div class="search-container">
+        </div>
+        
+        <div class="user-menu">
+          <div class="notifications">
+            <button class="icon-btn"><i class="fas fa-bell"></i></button>
+          </div>
+          
+          <div class="profile-dropdown">
+            <button class="profile-toggle">
+              <img src="../assets/images/default-profile.png" alt="Profile" id="user-profile-img">
+              <span id="user-name">John Doe</span>
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            
+            <div class="dropdown-menu">
+              <a href="#" id="edit-profile"><i class="fas fa-user-edit"></i> Edit Profile</a>
+              <a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+          </div>
+        </div>
+      </header>
+      
+      <!-- Content Area -->
+      <div class="content">
+        <h1 class="page-title">Room Reservation</h1>
+        
+        <!-- Guidelines Card -->
+        <div class="card">
+          <div class="card-header">
+            <h2>Library Room Guidelines</h2>
+          </div>
+          
+          <div class="card-body">
+            <div class="guidelines-list">
+              <div class="guideline-item">
+                <i class="fas fa-clock"></i>
+                <div class="guideline-text">
+                  <h4>Operating Hours</h4>
+                  <p>Rooms are available from 8:00 AM to 5:00 PM, Monday through Saturday</p>
+                </div>
+              </div>
+              
+              <div class="guideline-item">
+                <i class="fas fa-users"></i>
+                <div class="guideline-text">
+                  <h4>Group Size</h4>
+                  <p>Minimum of 5 and maximum of 10 members per room</p>
+                </div>
+              </div>
+              
+              <div class="guideline-item">
+                <i class="fas fa-hourglass-half"></i>
+                <div class="guideline-text">
+                  <h4>Duration</h4>
+                  <p>Maximum reservation time is 1 hours per session</p>
+                </div>
+              </div>
+              
+              <div class="guideline-item">
+                <i class="fas fa-calendar-alt"></i>
+                <div class="guideline-text">
+                  <h4>Advance Booking</h4>
+                  <p>Reservations must be made at least 24 hours in advance</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Reservation Form -->
+        <div class="card">
+          <div class="card-header">
+            <h2>Room Reservation Form</h2>
+          </div>
+          
+          <div class="card-body">
+            <form id="reservation-form" class="reservation-form">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="reservation-date">Date</label>
+                  <input type="date" id="reservation-date" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                  <label for="start-time">Start Time</label>
+                  <input type="time" id="start-time" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                  <label for="duration">Duration (hours)</label>
+                  <select id="duration" class="form-control" required>
+                    <option value="1">1 hour</option>
+                  </select>
+                </div>
+                
+                <div class="form-group">
+                  <label for="num-members">Number of Members (5-10)</label>
+                  <input type="number" id="num-members" class="form-control" min="5" max="10" value="5" required>
+                  <small class="form-text">You will need to add this number of members before submitting.</small>
+                </div>
+                
+                <div class="form-group">
+                  <label for="purpose">Purpose</label>
+                  <select id="purpose" class="form-control" required>
+                    <option value="">Select purpose</option>
+                    <option value="group-study">Group Study</option>
+                    <option value="research">Research</option>
+                    <option value="project">Project Work</option>
+                    <option value="presentation">Presentation Practice</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                
+                <div class="form-group full-width">
+                  <label for="purpose-details">Purpose Details</label>
+                  <textarea id="purpose-details" class="form-control" rows="3" placeholder="Please provide more details about your purpose"></textarea>
+                </div>
+                
+                <div class="form-group full-width">
+                  <div class="consent-box">
+                    <input type="checkbox" id="privacy-consent" required>
+                    <label for="privacy-consent">
+                      I agree to the library's room usage policy and understand that misuse may result in suspension of privileges.
+                    </label>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="add-members-btn">
+                  <i class="fas fa-users"></i> Add Members (0/5)
+                </button>
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-check"></i> Submit Reservation
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+    
+    <!-- Member List Modal -->
+    <div class="modal" id="member-list-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Group Members</h2>
+          <button class="close-modal">&times;</button>
+        </div>
+        
+        <div class="modal-body">
+          <div class="member-count-bar">
+            <p id="member-count-info">0 of 5 members added</p>
+          </div>
+          
+          <div class="member-form">
+            <div class="form-group">
+              <label for="member-name">Member Name</label>
+              <input type="text" id="member-name" class="form-control" placeholder="Enter member's full name">
+            </div>
+            
+            <div class="form-group">
+              <label for="member-id">Student/Employee ID</label>
+              <input type="text" id="member-id" class="form-control" placeholder="Enter member's ID number">
+            </div>
+            
+            <button class="btn btn-primary" id="add-member">Add Member</button>
+          </div>
+          
+          <div class="member-list">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>ID Number</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="member-list-body">
+                <!-- Will be populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <div class="modal-footer">
+          <button class="btn btn-secondary close-modal">Cancel</button>
+          <button class="btn btn-primary" id="save-members">Save Members</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Edit Modal -->
+  <div class="modal" id="profile-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Edit Profile</h2>
+        <button class="close-modal">&times;</button>
+      </div>
+      
+      <div class="modal-body">
+        <form id="profile-form">
+          <div class="profile-photo-container">
+            <img src="../assets/images/default-profile.png" alt="Profile Photo" id="profile-preview">
+            <div class="photo-upload">
+              <label for="profile-photo" class="btn btn-secondary">
+                <i class="fas fa-camera"></i> Change Photo
+              </label>
+              <input type="file" id="profile-photo" accept="image/*" hidden>
+              <p class="help-text">Max file size: 2MB. Supported formats: JPG, PNG</p>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="profile-id">Student/Employee Number</label>
+            <div class="disabled-field">
+              <input type="text" id="profile-id" class="form-control" disabled readonly>
+              <i class="fas fa-lock"></i>
+            </div>
+            <p class="help-text">This is your permanent identification number and cannot be changed</p>
+          </div>
+          
+          <div class="form-group">
+            <label>Name</label>
+            <div class="name-fields">
+              <div class="form-group">
+                <input type="text" id="profile-lastname" class="form-control" placeholder="Last Name" required>
+              </div>
+              <div class="form-group">
+                <input type="text" id="profile-firstname" class="form-control" placeholder="First Name" required>
+              </div>
+              <div class="form-group">
+                <input type="text" id="profile-middlename" class="form-control" placeholder="Middle Name (Optional)">
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="profile-email">Email Address</label>
+            <input type="email" id="profile-email" class="form-control" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="profile-current-password">Current Password</label>
+            <input type="password" id="profile-current-password" class="form-control" required>
+            <p class="help-text">Enter your current password to confirm changes</p>
+          </div>
+          
+          <div class="form-group">
+            <label for="profile-new-password">New Password</label>
+            <input type="password" id="profile-new-password" class="form-control" minlength="8">
+            <p class="help-text">Leave blank to keep current password. Minimum 8 characters.</p>
+          </div>
+        </form>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancel-profile-edit">Cancel</button>
+        <button class="btn btn-primary" id="save-profile" form="profile-form">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="../js/student.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize user data
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      if (currentUser) {
+        // Update user name in the header
+        const userNameElements = document.querySelectorAll('#user-name');
+        userNameElements.forEach(element => {
+          element.textContent = currentUser.name || 'User';
+        });
+        
+        // Update profile image if exists
+        const userProfileImg = document.getElementById('user-profile-img');
+        if (currentUser.profileImage && userProfileImg) {
+          userProfileImg.src = currentUser.profileImage;
+        }
+      }
+
+      // Load available rooms from API
+      function loadAvailableRooms() {
+        // This function is no longer needed since admin will assign rooms
+        // We'll keep the function as a placeholder but not use it
+        console.log("Room assignment will be handled by administrators");
+      }
+
+      // Initialize member count display on button
+      const numMembers = parseInt(document.getElementById('num-members').value) || 5;
+      const addMemberBtn = document.getElementById('add-members-btn');
+      if (addMemberBtn) {
+        addMemberBtn.innerHTML = `<i class="fas fa-users"></i> Add Members (0/${numMembers})`;
+      }
+
+      // Handle reservation form submission
+      const reservationForm = document.getElementById('reservation-form');
+      if (reservationForm) {
+        reservationForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          submitReservation();
+        });
+      }
+
+      // Set minimum date for reservation to tomorrow
+      const reservationDate = document.getElementById('reservation-date');
+      if (reservationDate) {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        reservationDate.min = tomorrow.toISOString().split('T')[0];
+      }
+
+      // Handle number of members changes
+      const numMembersInput = document.getElementById('num-members');
+      if (numMembersInput) {
+        numMembersInput.addEventListener('change', function() {
+          const numMembers = parseInt(this.value) || 5;
+          
+          // Ensure the value is within range
+          if (numMembers < 5) {
+            this.value = 5;
+          } else if (numMembers > 10) {
+            this.value = 10;
+          }
+          
+          // Update the button text
+          const addMemberBtn = document.getElementById('add-members-btn');
+          if (addMemberBtn) {
+            addMemberBtn.innerHTML = `<i class="fas fa-users"></i> Add Members (${memberList.length}/${this.value})`;
+          }
+          
+          // If we already have members and changed the required number
+          if (memberList.length > 0) {
+            // If we have more members than required, trim the list
+            if (memberList.length > numMembers) {
+              if (confirm(`You've reduced the number of members to ${numMembers}, but you have ${memberList.length} members. Do you want to remove the extra members?`)) {
+                memberList.splice(numMembers);
+                renderMemberList();
+              } else {
+                // Reset to the previous value
+                this.value = memberList.length;
+              }
+            }
+          }
+          
+          // Automatically open member modal when changing number of members
+          const memberListModal = document.getElementById('member-list-modal');
+          if (memberListModal) {
+            memberListModal.classList.add('active');
+            
+            // Show current member count and required count
+            const memberCountInfo = document.getElementById('member-count-info');
+            if (memberCountInfo) {
+              memberCountInfo.textContent = `${memberList.length} of ${numMembers} members added`;
+            }
+            
+            renderMemberList();
+          }
+        });
+      }
+
+      // Calculate end time based on start time and duration
+      const startTimeInput = document.getElementById('start-time');
+      const durationSelect = document.getElementById('duration');
+      
+      if (startTimeInput && durationSelect) {
+        startTimeInput.addEventListener('change', updateEndTime);
+        durationSelect.addEventListener('change', updateEndTime);
+      }
+
+      // Function to update end time based on start time and duration
+      function updateEndTime() {
+        const startTime = startTimeInput.value;
+        const duration = parseInt(durationSelect.value);
+        
+        if (startTime && !isNaN(duration)) {
+          // Parse start time
+          const [hours, minutes] = startTime.split(':').map(Number);
+          
+          // Create Date object with start time
+          const endDate = new Date();
+          endDate.setHours(hours, minutes, 0, 0);
+          
+          // Add duration
+          endDate.setHours(endDate.getHours() + duration);
+          
+          // Format end time
+          const endHours = endDate.getHours().toString().padStart(2, '0');
+          const endMinutes = endDate.getMinutes().toString().padStart(2, '0');
+          
+          // Store end time in a hidden field or data attribute for submission
+          const formData = reservationForm.dataset;
+          formData.endTime = `${endHours}:${endMinutes}`;
+        }
+      }
+
+      // Handle member list
+      const memberList = [];
+      const memberListModal = document.getElementById('member-list-modal');
+      const memberListBody = document.getElementById('member-list-body');
+      
+      if (addMemberBtn) {
+        addMemberBtn.addEventListener('click', function() {
+          memberListModal.classList.add('active');
+          
+          // Show current member count and required count
+          const numMembers = parseInt(document.getElementById('num-members').value) || 5;
+          const memberCountInfo = document.getElementById('member-count-info');
+          if (memberCountInfo) {
+            memberCountInfo.textContent = `${memberList.length} of ${numMembers} members added`;
+          }
+          
+          renderMemberList();
+        });
+      }
+      
+      // Member modal close functionality
+      const memberModalCloseButtons = document.querySelectorAll('#member-list-modal .close-modal');
+      memberModalCloseButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          memberListModal.classList.remove('active');
+        });
+      });
+      
+      // Close member modal when clicking outside
+      memberListModal.addEventListener('click', function(e) {
+        if (e.target === this) {
+          this.classList.remove('active');
+        }
+      });
+      
+      // Add member to list
+      const addMemberFormBtn = document.getElementById('add-member');
+      if (addMemberFormBtn) {
+        addMemberFormBtn.addEventListener('click', function() {
+          const memberName = document.getElementById('member-name').value.trim();
+          const memberId = document.getElementById('member-id').value.trim();
+          const numMembers = parseInt(document.getElementById('num-members').value) || 5;
+          
+          if (!memberName || !memberId) {
+            alert('Please enter both name and ID number.');
+            return;
+          }
+          
+          // Check if we've reached the limit
+          if (memberList.length >= numMembers) {
+            alert(`You've already added the required ${numMembers} members. You can remove existing members to add new ones.`);
+            return;
+          }
+          
+          // Add to list
+          memberList.push({
+            name: memberName,
+            id: memberId
+          });
+          
+          // Clear form
+          document.getElementById('member-name').value = '';
+          document.getElementById('member-id').value = '';
+          
+          // Update member count info
+          const memberCountInfo = document.getElementById('member-count-info');
+          if (memberCountInfo) {
+            memberCountInfo.textContent = `${memberList.length} of ${numMembers} members added`;
+          }
+          
+          // Render updated list
+          renderMemberList();
+        });
+      }
+      
+      // Render member list
+      function renderMemberList() {
+        if (!memberListBody) return;
+        
+        memberListBody.innerHTML = '';
+        
+        memberList.forEach((member, index) => {
+          const row = document.createElement('tr');
+          
+          row.innerHTML = `
+            <td>${member.name}</td>
+            <td>${member.id}</td>
+            <td>
+              <button class="btn btn-danger btn-sm delete-member" data-index="${index}">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </td>
+          `;
+          
+          memberListBody.appendChild(row);
+        });
+        
+        // Add delete event listeners
+        document.querySelectorAll('.delete-member').forEach(btn => {
+          btn.addEventListener('click', function() {
+            const index = parseInt(this.dataset.index);
+            memberList.splice(index, 1);
+            
+            // Update member count info
+            const numMembers = parseInt(document.getElementById('num-members').value) || 5;
+            const memberCountInfo = document.getElementById('member-count-info');
+            if (memberCountInfo) {
+              memberCountInfo.textContent = `${memberList.length} of ${numMembers} members added`;
+            }
+            
+            renderMemberList();
+          });
+        });
+      }
+      
+      // Save members
+      const saveMembersBtn = document.getElementById('save-members');
+      if (saveMembersBtn) {
+        saveMembersBtn.addEventListener('click', function() {
+          const numMembers = parseInt(document.getElementById('num-members').value) || 5;
+          
+          // Check if we have the required number of members
+          if (memberList.length < numMembers) {
+            alert(`Please add ${numMembers - memberList.length} more member(s). You need exactly ${numMembers} members.`);
+            return;
+          }
+          
+          // Update number of members field
+          document.getElementById('num-members').value = memberList.length;
+          
+          // Close modal
+          memberListModal.classList.remove('active');
+          
+          // Update the members count on the button
+          addMemberBtn.innerHTML = `<i class="fas fa-users"></i> Members (${memberList.length}/${numMembers})`;
+        });
+      }
+
+      // Function to submit reservation
+      function submitReservation() {
+        // Get form values
+        const reservationForm = document.getElementById('reservation-form');
+        const reservationDate = document.getElementById('reservation-date').value;
+        const startTime = document.getElementById('start-time').value;
+        const duration = parseInt(document.getElementById('duration').value);
+        const numMembers = parseInt(document.getElementById('num-members').value);
+        const purposeType = document.getElementById('purpose').value;
+        const purposeDetails = document.getElementById('purpose-details').value;
+        const consentChecked = document.getElementById('privacy-consent').checked;
+        
+        // Validation - collect all errors
+        const errors = [];
+        
+        if (!reservationDate) {
+          errors.push("Please select a reservation date.");
+        }
+        
+        if (!startTime) {
+          errors.push("Please select a start time.");
+        }
+        
+        if (isNaN(duration) || duration <= 0) {
+          errors.push("Invalid duration selected.");
+        }
+        
+        if (isNaN(numMembers) || numMembers < 5 || numMembers > 10) {
+          errors.push("Number of members should be between 5 and 10.");
+        }
+        
+        if (!purposeType) {
+          errors.push("Please select a purpose for your reservation.");
+        }
+        
+        if (!consentChecked) {
+          errors.push("You must agree to the library's room usage policy.");
+        }
+        
+        // Check if members match the required number
+        if (memberList.length !== numMembers) {
+          errors.push(`You need to add exactly ${numMembers} members. Currently you have ${memberList.length} members.`);
+        }
+        
+        // If there are validation errors, show them and stop submission
+        if (errors.length > 0) {
+          alert("Please fix the following errors:\n\n" + errors.join("\n"));
+          return;
+        }
+        
+        // Calculate end time
+        const [startHours, startMinutes] = startTime.split(':').map(Number);
+        const endDate = new Date();
+        endDate.setHours(startHours, startMinutes, 0, 0);
+        endDate.setHours(endDate.getHours() + duration);
+        const endHours = endDate.getHours().toString().padStart(2, '0');
+        const endMinutes = endDate.getMinutes().toString().padStart(2, '0');
+        const endTime = `${endHours}:${endMinutes}`;
+        
+        // Create reservation object
+        const reservationData = {
+          user_id: currentUser.user_id,
+          purpose: purposeType + (purposeDetails ? ': ' + purposeDetails : ''),
+          reservation_date: reservationDate,
+          start_time: startTime,
+          end_time: endTime,
+          admin_assign: true // Flag to indicate admin should assign room
+        };
+        
+        console.log('Submitting reservation data:', reservationData);
+        
+        // Show loading indicator
+        const submitBtn = document.querySelector('#reservation-form button[type="submit"]');
+        const originalBtnText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+        submitBtn.disabled = true;
+        
+        // Send reservation to API
+        fetch('../api/rooms/reserve.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(reservationData)
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Server responded with status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log('Reservation API response:', data);
+          
+          if (data.status === 'success') {
+            // If we have members, save them too
+            if (memberList.length > 0 && data.reservation_id) {
+              console.log('Saving group members for reservation ID:', data.reservation_id);
+              saveReservationMembers(data.reservation_id, memberList);
+            } else {
+              // Show message that admin will assign a room
+              alert('Room reservation submitted successfully! An administrator will assign a room to your reservation and you will be notified when it is approved.');
+              reservationForm.reset();
+              memberList.length = 0; // Clear member list
+              submitBtn.innerHTML = originalBtnText;
+              submitBtn.disabled = false;
+            }
+          } else {
+            throw new Error(data.message || 'Unknown error occurred');
+          }
+        })
+        .catch(error => {
+          console.error('Error submitting reservation:', error);
+          alert('Failed to submit reservation: ' + error.message);
+          submitBtn.innerHTML = originalBtnText;
+          submitBtn.disabled = false;
+        });
+      }
+
+      // Function to save reservation members
+      function saveReservationMembers(reservationId, members) {
+        const memberData = {
+          reservation_id: reservationId,
+          members: members
+        };
+        
+        console.log('Saving member data:', memberData);
+        
+        fetch('../api/rooms/add_members.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(memberData)
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Server responded with status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log('Add members API response:', data);
+          
+          const submitBtn = document.querySelector('#reservation-form button[type="submit"]');
+          submitBtn.innerHTML = '<i class="fas fa-check"></i> Submit Reservation';
+          submitBtn.disabled = false;
+          
+          if (data.status === 'success') {
+            alert('Room reservation submitted successfully! Your reservation is pending approval. An administrator will assign a room to your reservation.');
+            reservationForm.reset();
+            memberList.length = 0; // Clear member list
+          } else {
+            throw new Error(data.message || 'Unknown error occurred');
+          }
+        })
+        .catch(error => {
+          console.error('Error adding members:', error);
+          alert('Reservation created but failed to add members: ' + error.message);
+          
+          const submitBtn = document.querySelector('#reservation-form button[type="submit"]');
+          submitBtn.innerHTML = '<i class="fas fa-check"></i> Submit Reservation';
+          submitBtn.disabled = false;
+        });
+      }
+
+      // Edit Profile Modal Functionality
+      const editProfileBtn = document.getElementById('edit-profile');
+      const profileModal = document.getElementById('profile-modal');
+      const closeModalButtons = document.querySelectorAll('.close-modal');
+      const cancelProfileEdit = document.getElementById('cancel-profile-edit');
+      const saveProfileBtn = document.getElementById('save-profile');
+      const profilePhoto = document.getElementById('profile-photo');
+      const profilePreview = document.getElementById('profile-preview');
+      const userProfileImg = document.getElementById('user-profile-img');
+
+      // Open modal
+      if (editProfileBtn && profileModal) {
+        editProfileBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          console.log('Edit profile button clicked in room reservation page');
+          
+          // Get current user data
+          const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+          if (!currentUser) {
+            console.error('No user data found in localStorage');
+            return;
+          }
+          
+          // Populate modal with user data
+          document.getElementById('profile-id').value = currentUser.id || '';
+          document.getElementById('profile-lastname').value = currentUser.lastName || '';
+          document.getElementById('profile-firstname').value = currentUser.firstName || '';
+          document.getElementById('profile-middlename').value = currentUser.middleName || '';
+          document.getElementById('profile-email').value = currentUser.email || '';
+          
+          // Set profile image if exists
+          if (currentUser.profileImage) {
+            profilePreview.src = currentUser.profileImage;
+          }
+          
+          // Show modal
+          profileModal.classList.add('active');
+        });
+      }
+
+      // Close modal function
+      function closeProfileModal() {
+        profileModal.classList.remove('active');
+        // Clear password fields
+        document.getElementById('profile-current-password').value = '';
+        document.getElementById('profile-new-password').value = '';
+      }
+
+      // Close modal event listeners
+      if (closeModalButtons.length > 0) {
+        closeModalButtons.forEach(button => {
+          button.addEventListener('click', closeProfileModal);
+        });
+      }
+
+      if (cancelProfileEdit) {
+        cancelProfileEdit.addEventListener('click', closeProfileModal);
+      }
+
+      // Close modal when clicking outside
+      profileModal.addEventListener('click', function(e) {
+        if (e.target === profileModal) {
+          closeProfileModal();
+        }
+      });
+
+      // Profile photo upload
+      if (profilePhoto && profilePreview) {
+        profilePhoto.addEventListener('change', function() {
+          const file = this.files[0];
+          if (file) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+              const imageData = e.target.result;
+              profilePreview.src = imageData;
+              // Also update the header profile image
+              if (userProfileImg) {
+                userProfileImg.src = imageData;
+              }
+              
+              // Update user data in localStorage
+              const currentUser = JSON.parse(localStorage.getItem('currentUser')) || {};
+              currentUser.profileImage = imageData;
+              localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            };
+            
+            reader.readAsDataURL(file);
+          }
+        });
+      }
+
+      // Save profile changes
+      if (saveProfileBtn) {
+        saveProfileBtn.addEventListener('click', function() {
+          const lastName = document.getElementById('profile-lastname').value.trim();
+          const firstName = document.getElementById('profile-firstname').value.trim();
+          const middleName = document.getElementById('profile-middlename').value.trim();
+          const email = document.getElementById('profile-email').value.trim();
+          const currentPassword = document.getElementById('profile-current-password').value;
+          const newPassword = document.getElementById('profile-new-password').value;
+          
+          // Validation
+          if (!lastName || !firstName || !email || !currentPassword) {
+            alert('Please fill in all required fields.');
+            return;
+          }
+          
+          // Email validation
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(email)) {
+            alert('Please enter a valid email address.');
+            return;
+          }
+          
+          // Get current user data
+          const currentUser = JSON.parse(localStorage.getItem('currentUser')) || {};
+          
+          // Update user data
+          currentUser.lastName = lastName;
+          currentUser.firstName = firstName;
+          currentUser.middleName = middleName;
+          currentUser.email = email;
+          currentUser.name = `${firstName} ${lastName}`;
+          
+          // Save updated user data
+          localStorage.setItem('currentUser', JSON.stringify(currentUser));
+          
+          // Update displayed name
+          const userNameElements = document.querySelectorAll('#user-name');
+          userNameElements.forEach(element => {
+            element.textContent = currentUser.name;
+          });
+          
+          // Show success message
+          alert('Profile updated successfully!');
+          
+          // Close modal and clear fields
+          closeProfileModal();
+        });
+      }
+    });
+  </script>
+</body>
+</html>

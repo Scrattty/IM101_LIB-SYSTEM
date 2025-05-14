@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Requests - Library Management System</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/admin.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="../assets/logo.png" alt="Library Logo" class="sidebar-logo">
+        <h3>Library System</h3>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <ul>
+          <li>
+            <a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+          </li>
+          <li>
+            <a href="manage-members.html"><i class="fas fa-users"></i> Manage Members</a>
+          </li>
+          <li>
+            <a href="manage-books.html"><i class="fas fa-book"></i> Manage Books</a>
+          </li>
+          <li>
+            <a href="book-requests.html"><i class="fas fa-book-reader"></i> Book Requests</a>
+          </li>
+          <li class="active">
+            <a href="room-requests.html"><i class="fas fa-door-open"></i> Room Requests</a>
+          </li>
+          <li>
+            <a href="announcements.html"><i class="fas fa-bullhorn"></i> Announcements</a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Navigation -->
+      <header class="top-nav">
+        <div class="search-container">
+          <input type="text" placeholder="Search requests...">
+          <button type="button"><i class="fas fa-search"></i></button>
+        </div>
+        
+        <div class="user-menu">
+          <div class="notifications">
+            <button class="icon-btn"><i class="fas fa-bell"></i></button>
+          </div>
+          
+          <div class="profile-dropdown">
+            <button class="profile-toggle">
+              <img src="../assets/images/default-profile.png" alt="Profile" id="user-profile-img">
+              <span id="user-name">Admin User</span>
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            
+            <div class="dropdown-menu">
+              <a href="#" id="edit-profile"><i class="fas fa-user-edit"></i> Edit Profile</a>
+              <a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+          </div>
+        </div>
+      </header>
+      
+      <!-- Content Area -->
+      <div class="content">
+        <h1 class="page-title">Room Requests</h1>
+        
+        <!-- Filter and Search -->
+        <div class="card">
+          <div class="card-header">
+            <div class="filter-container">
+              <label for="status-filter">Status:</label>
+              <select id="status-filter" class="form-control sm">
+                <option value="all">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+              </select>
+              
+              <label for="date-filter">Date:</label>
+              <select id="date-filter" class="form-control sm">
+                <option value="">All Dates</option>
+              </select>
+              
+              <button class="btn btn-primary sm">Apply Filters</button>
+              <button class="btn btn-secondary sm">Reset</button>
+            </div>
+          </div>
+          
+          <div class="card-body">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Requester</th>
+                  <th>Members</th>
+                  <th>Purpose</th>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Room</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="reservations-table-body">
+                <!-- Reservations will be loaded dynamically -->
+              </tbody>
+            </table>
+            
+            <div class="pagination">
+              <button class="pagination-btn"><i class="fas fa-chevron-left"></i></button>
+              <button class="pagination-btn active">1</button>
+              <button class="pagination-btn">2</button>
+              <button class="pagination-btn">3</button>
+              <span class="pagination-ellipsis">...</span>
+              <button class="pagination-btn">10</button>
+              <button class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    
+    <!-- Edit Profile Modal -->
+    <div class="modal" id="profile-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Edit Profile</h2>
+          <button class="close-modal">&times;</button>
+        </div>
+        
+        <div class="modal-body">
+          <form id="profile-form">
+            <div class="profile-photo-container">
+              <img src="../assets/images/default-profile.png" alt="Profile Photo" id="profile-preview">
+              <div class="photo-upload">
+                <label for="profile-photo" class="btn btn-secondary">
+                  <i class="fas fa-camera"></i> Change Photo
+                </label>
+                <input type="file" id="profile-photo" accept="image/*" hidden>
+                <p class="help-text">Max file size: 2MB. Supported formats: JPG, PNG</p>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="profile-id">Student/Employee Number</label>
+              <div class="disabled-field">
+                <input type="text" id="profile-id" class="form-control" disabled readonly>
+                <i class="fas fa-lock"></i>
+              </div>
+              <p class="help-text">This is your permanent identification number and cannot be changed</p>
+            </div>
+            
+            <div class="form-group">
+              <label>Name</label>
+              <div class="name-fields">
+                <div class="form-group">
+                  <input type="text" id="profile-lastname" class="form-control" placeholder="Last Name" required>
+                </div>
+                <div class="form-group">
+                  <input type="text" id="profile-firstname" class="form-control" placeholder="First Name" required>
+                </div>
+                <div class="form-group">
+                  <input type="text" id="profile-middlename" class="form-control" placeholder="Middle Name (Optional)">
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="profile-email">Email Address</label>
+              <input type="email" id="profile-email" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="profile-current-password">Current Password</label>
+              <input type="password" id="profile-current-password" class="form-control" required>
+              <p class="help-text">Enter your current password to confirm changes</p>
+            </div>
+            
+            <div class="form-group">
+              <label for="profile-new-password">New Password</label>
+              <input type="password" id="profile-new-password" class="form-control" minlength="8">
+              <p class="help-text">Leave blank to keep current password. Minimum 8 characters.</p>
+            </div>
+          </form>
+        </div>
+        
+        <div class="modal-footer">
+          <button class="btn btn-secondary" id="cancel-profile-edit">Cancel</button>
+          <button class="btn btn-primary" id="save-profile" form="profile-form">Save Changes</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Request Details Modal -->
+    <div class="modal" id="request-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Room Request Details</h2>
+          <button class="close-modal">&times;</button>
+        </div>
+        
+        <div class="modal-body">
+          <div class="request-details">
+            <div class="detail-section">
+              <h3>Student Information</h3>
+              <div class="detail-grid">
+                <div class="detail-item">
+                  <label>Name:</label>
+                  <span id="student-name">John Smith</span>
+                </div>
+                <div class="detail-item">
+                  <label>ID Number:</label>
+                  <span id="student-id">2023-0001</span>
+                </div>
+                <div class="detail-item">
+                  <label>Course:</label>
+                  <span id="student-course">BS Computer Science</span>
+                </div>
+                <div class="detail-item">
+                  <label>Year Level:</label>
+                  <span id="student-year">3rd Year</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="detail-section">
+              <h3>Room Information</h3>
+              <div class="detail-grid">
+                <div class="detail-item">
+                  <label>Room:</label>
+                  <span id="room-name">Room 101</span>
+                </div>
+                <div class="detail-item">
+                  <label>Capacity:</label>
+                  <span id="room-capacity">30 persons</span>
+                </div>
+                <div class="detail-item">
+                  <label>Location:</label>
+                  <span id="room-location">Main Building</span>
+                </div>
+                <div class="detail-item">
+                  <label>Facilities:</label>
+                  <span id="room-facilities">Projector, Whiteboard, Air Conditioning</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="detail-section">
+              <h3>Request Information</h3>
+              <div class="detail-grid">
+                <div class="detail-item">
+                  <label>Request Date:</label>
+                  <span id="request-date">2023-09-15</span>
+                </div>
+                <div class="detail-item">
+                  <label>Reservation Date:</label>
+                  <span id="reservation-date">2023-09-18</span>
+                </div>
+                <div class="detail-item">
+                  <label>Time Slot:</label>
+                  <span id="time-slot">1:00 PM - 2:00 PM</span>
+                </div>
+                <div class="detail-item">
+                  <label>Status:</label>
+                  <span id="request-status" class="status-badge pending">Pending</span>
+                </div>
+                <div class="detail-item full-width">
+                  <label>Purpose:</label>
+                  <p id="request-purpose">Group study session for Database Management course.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="modal-footer">
+          <button class="btn btn-secondary close-modal">Close</button>
+          <div class="action-buttons">
+            <button class="btn btn-success" id="approve-request">Approve</button>
+            <button class="btn btn-danger" id="reject-request">Reject</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Room Assignment Modal -->
+    <div class="modal" id="assign-room-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Assign Room</h2>
+          <button class="close-modal">&times;</button>
+        </div>
+        
+        <div class="modal-body">
+          <form id="assign-room-form">
+            <input type="hidden" id="reservation-id">
+            <input type="hidden" id="reservation-date">
+            <input type="hidden" id="reservation-start-time">
+            <input type="hidden" id="reservation-end-time">
+            
+            <div class="form-group">
+              <label for="room-select">Select Room:</label>
+              <select id="room-select" class="form-control" required>
+                <option value="">Loading rooms...</option>
+              </select>
+              <small class="form-text">Only available rooms for the selected time slot are shown.</small>
+            </div>
+            
+            <div class="form-group">
+              <label>Reservation Details:</label>
+              <div class="reservation-details">
+                <p><strong>Requester:</strong> <span id="modal-requester"></span></p>
+                <p><strong>Date:</strong> <span id="modal-date"></span></p>
+                <p><strong>Time:</strong> <span id="modal-time"></span></p>
+                <p><strong>Purpose:</strong> <span id="modal-purpose"></span></p>
+                <p><strong>Group Members:</strong> <span id="modal-members"></span></p>
+              </div>
+            </div>
+          </form>
+        </div>
+        
+        <div class="modal-footer">
+          <button class="btn btn-secondary close-modal">Cancel</button>
+          <button class="btn btn-primary" id="confirm-assign">Assign Room & Approve</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/admin.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize user data
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      if (currentUser) {
+        // Update user name in the header
+        const userNameElements = document.querySelectorAll('#user-name');
+        userNameElements.forEach(element => {
+          element.textContent = currentUser.name || 'User';
+        });
+        
+        // Update profile image if exists
+        const userProfileImg = document.getElementById('user-profile-img');
+        if (currentUser.profileImage && userProfileImg) {
+          userProfileImg.src = currentUser.profileImage;
+        }
+      }
+
+      // Edit Profile Modal Functionality
+      const editProfileBtn = document.getElementById('edit-profile');
+      const profileModal = document.getElementById('profile-modal');
+      const closeModalButtons = document.querySelectorAll('.close-modal');
+      const cancelProfileEdit = document.getElementById('cancel-profile-edit');
+      const saveProfileBtn = document.getElementById('save-profile');
+      const profilePhoto = document.getElementById('profile-photo');
+      const profilePreview = document.getElementById('profile-preview');
+      const userProfileImg = document.getElementById('user-profile-img');
+
+      // Open modal
+      if (editProfileBtn && profileModal) {
+        editProfileBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          console.log('Edit profile button clicked in room requests page');
+          
+          // Get current user data
+          const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+          if (!currentUser) {
+            console.error('No user data found in localStorage');
+            return;
+          }
+          
+          // Populate modal with user data
+          document.getElementById('profile-id').value = currentUser.id || '';
+          document.getElementById('profile-lastname').value = currentUser.lastName || '';
+          document.getElementById('profile-firstname').value = currentUser.firstName || '';
+          document.getElementById('profile-middlename').value = currentUser.middleName || '';
+          document.getElementById('profile-email').value = currentUser.email || '';
+          
+          // Set profile image if exists
+          if (currentUser.profileImage) {
+            profilePreview.src = currentUser.profileImage;
+          }
+          
+          // Show modal
+          profileModal.classList.add('active');
+        });
+      }
+
+      // Close modal function
+      function closeProfileModal() {
+        profileModal.classList.remove('active');
+        // Clear password fields
+        document.getElementById('profile-current-password').value = '';
+        document.getElementById('profile-new-password').value = '';
+      }
+
+      // Close modal event listeners
+      if (closeModalButtons.length > 0) {
+        closeModalButtons.forEach(button => {
+          button.addEventListener('click', closeProfileModal);
+        });
+      }
+
+      if (cancelProfileEdit) {
+        cancelProfileEdit.addEventListener('click', closeProfileModal);
+      }
+
+      // Close modal when clicking outside
+      profileModal.addEventListener('click', function(e) {
+        if (e.target === profileModal) {
+          closeProfileModal();
+        }
+      });
+
+      // Profile photo upload
+      if (profilePhoto && profilePreview) {
+        profilePhoto.addEventListener('change', function() {
+          const file = this.files[0];
+          if (file) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+              const imageData = e.target.result;
+              profilePreview.src = imageData;
+              // Also update the header profile image
+              if (userProfileImg) {
+                userProfileImg.src = imageData;
+              }
+              
+              // Update user data in localStorage
+              const currentUser = JSON.parse(localStorage.getItem('currentUser')) || {};
+              currentUser.profileImage = imageData;
+              localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            };
+            
+            reader.readAsDataURL(file);
+          }
+        });
+      }
+
+      // Save profile changes
+      if (saveProfileBtn) {
+        saveProfileBtn.addEventListener('click', function() {
+          const lastName = document.getElementById('profile-lastname').value.trim();
+          const firstName = document.getElementById('profile-firstname').value.trim();
+          const middleName = document.getElementById('profile-middlename').value.trim();
+          const email = document.getElementById('profile-email').value.trim();
+          const currentPassword = document.getElementById('profile-current-password').value;
+          const newPassword = document.getElementById('profile-new-password').value;
+          
+          // Validation
+          if (!lastName || !firstName || !email || !currentPassword) {
+            alert('Please fill in all required fields.');
+            return;
+          }
+          
+          // Email validation
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(email)) {
+            alert('Please enter a valid email address.');
+            return;
+          }
+          
+          // Get current user data
+          const currentUser = JSON.parse(localStorage.getItem('currentUser')) || {};
+          
+          // Update user data
+          currentUser.lastName = lastName;
+          currentUser.firstName = firstName;
+          currentUser.middleName = middleName;
+          currentUser.email = email;
+          currentUser.name = `${firstName} ${lastName}`;
+          
+          // Save updated user data
+          localStorage.setItem('currentUser', JSON.stringify(currentUser));
+          
+          // Update displayed name
+          const userNameElements = document.querySelectorAll('#user-name');
+          userNameElements.forEach(element => {
+            element.textContent = currentUser.name;
+          });
+          
+          // Show success message
+          alert('Profile updated successfully!');
+          
+          // Close modal and clear fields
+          closeProfileModal();
+        });
+      }
+
+      // Function to load reservations from API
+      function loadReservations() {
+        fetch('../api/rooms/get_reservations.php')
+          .then(response => response.json())
+          .then(data => {
+            if (data.status === 'success') {
+              const tableBody = document.getElementById('reservations-table-body');
+              tableBody.innerHTML = ''; // Clear existing rows
+              
+              data.reservations.forEach(reservation => {
+                const row = document.createElement('tr');
+                row.setAttribute('data-id', reservation.reservation_id);
+                
+                // Format the status badge class
+                const statusClass = reservation.status.toLowerCase();
+                const isAssigned = reservation.room_id ? true : false;
+                
+                // Format members list
+                const membersList = reservation.members && reservation.members.length > 0 
+                  ? reservation.members.map(member => `${member.name} (${member.student_id})`).join(', ')
+                  : '-';
+                
+                row.innerHTML = `
+                  <td>
+                    <div>
+                      <div class="user-name">${reservation.user_name}</div>
+                      <div class="user-id">${reservation.student_id}</div>
+                    </div>
+                  </td>
+                  <td>${membersList}</td>
+                  <td>${reservation.purpose}</td>
+                  <td>${reservation.reservation_date}</td>
+                  <td>${formatTime(reservation.start_time)} - ${formatTime(reservation.end_time)}</td>
+                  <td>${reservation.room_name || '-'}</td>
+                  <td><span class="status-badge ${statusClass}">${reservation.status}</span></td>
+                  <td>
+                    <button class="btn-icon view-details" title="View Details"><i class="fas fa-eye"></i></button>
+                    ${reservation.status === 'pending' ? `
+                      ${!isAssigned ? `
+                        <button class="btn btn-success btn-sm assign-room" data-id="${reservation.reservation_id}">
+                          Assign Room & Approve
+                        </button>
+                      ` : `
+                        <button class="btn btn-success btn-sm approve-request" data-id="${reservation.reservation_id}">
+                          Approve
+                        </button>
+                      `}
+                      <button class="btn btn-danger btn-sm reject-request" data-id="${reservation.reservation_id}">
+                        Reject
+                      </button>
+                    ` : ''}
+                  </td>
+                `;
+                
+                tableBody.appendChild(row);
+              });
+              
+              // Initialize event listeners for the new buttons
+              initializeEventListeners();
+            } else {
+              console.error('Error loading reservations:', data.message);
+            }
+          })
+          .catch(error => {
+            console.error('Error fetching reservations:', error);
+          });
+      }
+
+      // Function to initialize event listeners for buttons
+      function initializeEventListeners() {
+        // Assign Room button click handler
+        document.querySelectorAll('.assign-room').forEach(button => {
+          button.addEventListener('click', function() {
+            const reservationId = this.getAttribute('data-id');
+            const row = this.closest('tr');
+            
+            // Get reservation details
+            const date = row.cells[3].textContent;
+            const timeRange = row.cells[4].textContent;
+            const [startTime, endTime] = timeRange.split(' - ').map(t => {
+              const [time, period] = t.split(' ');
+              let [hours, minutes] = time.split(':');
+              hours = parseInt(hours);
+              if (period === 'PM' && hours !== 12) hours += 12;
+              if (period === 'AM' && hours === 12) hours = 0;
+              return `${hours.toString().padStart(2, '0')}:${minutes}`;
+            });
+            
+            // Store reservation details in hidden fields
+            document.getElementById('reservation-id').value = reservationId;
+            document.getElementById('reservation-date').value = date;
+            document.getElementById('reservation-start-time').value = startTime;
+            document.getElementById('reservation-end-time').value = endTime;
+            
+            // Populate modal with reservation details
+            document.getElementById('modal-requester').textContent = row.querySelector('.user-name').textContent;
+            document.getElementById('modal-date').textContent = date;
+            document.getElementById('modal-time').textContent = timeRange;
+            document.getElementById('modal-purpose').textContent = row.cells[2].textContent;
+            document.getElementById('modal-members').textContent = row.cells[1].textContent;
+            
+            // Load available rooms
+            loadAvailableRooms(date, startTime, endTime);
+            
+            // Show the modal
+            document.getElementById('assign-room-modal').classList.add('active');
+          });
+        });
+
+        // Confirm room assignment and approve
+        document.getElementById('confirm-assign').addEventListener('click', function() {
+          const reservationId = document.getElementById('reservation-id').value;
+          const roomSelect = document.getElementById('room-select');
+          const selectedOption = roomSelect.options[roomSelect.selectedIndex];
+          
+          if (!roomSelect.value) {
+            alert('Please select a room');
+            return;
+          }
+          
+          const roomData = {
+            reservation_id: reservationId,
+            room_id: roomSelect.value,
+            room_name: selectedOption.textContent.split(' - ')[0],
+            status: 'approved'
+          };
+          
+          // Call API to assign room and approve reservation
+          fetch('../api/rooms/assign_room.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(roomData)
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.status === 'success') {
+              // Close modal
+              document.getElementById('assign-room-modal').classList.remove('active');
+              // Reload reservations
+              loadReservations();
+              alert('Room assigned and reservation approved successfully!');
+            } else {
+              alert('Error: ' + data.message);
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while assigning the room');
+          });
+        });
+
+        // Approve request button click handler
+        document.querySelectorAll('.approve-request').forEach(button => {
+          button.addEventListener('click', function() {
+            const reservationId = this.getAttribute('data-id');
+            
+            if (confirm('Are you sure you want to approve this reservation?')) {
+              fetch('../api/rooms/update_status.php', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  reservation_id: reservationId,
+                  status: 'approved'
+                })
+              })
+              .then(response => response.json())
+              .then(data => {
+                if (data.status === 'success') {
+                  loadReservations();
+                  alert('Reservation approved successfully!');
+                } else {
+                  alert('Error: ' + data.message);
+                }
+              })
+              .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while approving the reservation');
+              });
+            }
+          });
+        });
+
+        // Reject request button click handler
+        document.querySelectorAll('.reject-request').forEach(button => {
+          button.addEventListener('click', function() {
+            const reservationId = this.getAttribute('data-id');
+            
+            if (confirm('Are you sure you want to reject this reservation?')) {
+              fetch('../api/rooms/update_status.php', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  reservation_id: reservationId,
+                  status: 'rejected'
+                })
+              })
+              .then(response => response.json())
+              .then(data => {
+                if (data.status === 'success') {
+                  loadReservations();
+                  alert('Reservation rejected successfully!');
+                } else {
+                  alert('Error: ' + data.message);
+                }
+              })
+              .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while rejecting the reservation');
+              });
+            }
+          });
+        });
+      }
+
+      // Function to load available rooms
+      function loadAvailableRooms(date, startTime, endTime) {
+        const roomSelect = document.getElementById('room-select');
+        roomSelect.innerHTML = '<option value="">Loading rooms...</option>';
+        
+        // Fetch available rooms from API
+        fetch(`../api/rooms/get_rooms.php?date=${date}&start_time=${startTime}&end_time=${endTime}`)
+          .then(response => response.json())
+          .then(data => {
+            if (data.status === 'success') {
+              if (data.rooms.length === 0) {
+                roomSelect.innerHTML = '<option value="">No available rooms for this time slot</option>';
+                return;
+              }
+              
+              // Populate room select
+              roomSelect.innerHTML = '<option value="">Choose a room...</option>';
+              data.rooms.forEach(room => {
+                const option = document.createElement('option');
+                option.value = room.room_id;
+                option.textContent = `${room.room_name} - ${room.room_type} (Capacity: ${room.capacity})`;
+                option.title = room.description;
+                roomSelect.appendChild(option);
+              });
+            } else {
+              roomSelect.innerHTML = '<option value="">Error loading rooms</option>';
+              console.error('Error loading rooms:', data.message);
+            }
+          })
+          .catch(error => {
+            roomSelect.innerHTML = '<option value="">Error loading rooms</option>';
+            console.error('Error fetching rooms:', error);
+          });
+      }
+
+      // Close assign room modal when clicking close button or outside
+      document.querySelectorAll('#assign-room-modal .close-modal').forEach(button => {
+        button.addEventListener('click', function() {
+          document.getElementById('assign-room-modal').classList.remove('active');
+        });
+      });
+
+      window.addEventListener('click', function(event) {
+        const modal = document.getElementById('assign-room-modal');
+        if (event.target === modal) {
+          modal.classList.remove('active');
+        }
+      });
+
+      // Load reservations when page loads
+      loadReservations();
+
+      // Add CSS for new elements
+      const style = document.createElement('style');
+      style.textContent = `
+        .user-info {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+        }
+
+        .user-avatar {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          object-fit: cover;
+        }
+
+        .user-name {
+          font-weight: 500;
+          color: var(--neutral-900);
+        }
+
+        .user-id {
+          font-size: 0.875rem;
+          color: var(--neutral-600);
+        }
+
+        .status-badge {
+          display: inline-block;
+          padding: 0.25rem 0.75rem;
+          border-radius: 9999px;
+          font-size: 0.875rem;
+          font-weight: 500;
+          text-transform: capitalize;
+        }
+
+        .status-badge.pending {
+          background-color: var(--warning-100);
+          color: var(--warning-700);
+        }
+
+        .status-badge.approved {
+          background-color: var(--success-100);
+          color: var(--success-700);
+        }
+
+        .status-badge.rejected {
+          background-color: var(--danger-100);
+          color: var(--danger-700);
+        }
+
+        .reservation-details {
+          background-color: var(--neutral-50);
+          border-radius: 0.5rem;
+          padding: 1rem;
+          margin-top: 0.5rem;
+        }
+
+        .reservation-details p {
+          margin: 0.5rem 0;
+        }
+
+        .reservation-details strong {
+          color: var(--neutral-700);
+        }
+
+        #assign-room-modal .modal-content {
+          max-width: 500px;
+        }
+      `;
+      document.head.appendChild(style);
+    });
+
+    function formatTime(timeStr) {
+      // Expects 'HH:MM:SS' or 'HH:MM'
+      const [hour, minute] = timeStr.split(':');
+      let h = parseInt(hour, 10);
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12;
+      if (h === 0) h = 12;
+      return `${h}:${minute} ${ampm}`;
+    }
+  </script>
+</body>
+</html>

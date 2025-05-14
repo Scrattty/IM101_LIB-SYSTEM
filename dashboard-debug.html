@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Debugging</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .card {
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    h1, h2 {
+      color: #333;
+    }
+    pre {
+      background: #f5f5f5;
+      padding: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    button {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+  <h1>Dashboard Debugging Page</h1>
+  
+  <div class="card">
+    <h2>API Response</h2>
+    <button id="fetchUsers">Fetch User Data</button>
+    <pre id="apiResponse">Click the button to fetch data...</pre>
+    
+    <h3>Parsed Statistics</h3>
+    <table id="statsTable">
+      <tr>
+        <th>Metric</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>Total Users</td>
+        <td id="totalUsers">-</td>
+      </tr>
+      <tr>
+        <td>Students</td>
+        <td id="studentsCount">-</td>
+      </tr>
+      <tr>
+        <td>Faculty</td>
+        <td id="facultyCount">-</td>
+      </tr>
+      <tr>
+        <td>Admin</td>
+        <td id="adminCount">-</td>
+      </tr>
+      <tr>
+        <td><strong>Students + Faculty (Should show on dashboard)</strong></td>
+        <td id="nonAdminTotal">-</td>
+      </tr>
+    </table>
+    
+    <h3>User Records</h3>
+    <table id="usersTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Role</th>
+          <th>Name</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- User data will be inserted here -->
+      </tbody>
+    </table>
+  </div>
+  
+  <script>
+    document.getElementById('fetchUsers').addEventListener('click', function() {
+      fetch('/LIB/api/users/list.php')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok: ' + response.statusText);
+          }
+          return response.json();
+        })
+        .then(data => {
+          // Display raw JSON
+          document.getElementById('apiResponse').textContent = JSON.stringify(data, null, 2);
+          
+          // Update statistics table
+          document.getElementById('totalUsers').textContent = data.total_users;
+          document.getElementById('studentsCount').textContent = data.students_count;
+          document.getElementById('facultyCount').textContent = data.faculty_count;
+          document.getElementById('adminCount').textContent = data.admin_count;
+          
+          // Calculate and display non-admin total
+          const studentsCount = parseInt(data.students_count) || 0;
+          const facultyCount = parseInt(data.faculty_count) || 0;
+          const nonAdminTotal = studentsCount + facultyCount;
+          document.getElementById('nonAdminTotal').textContent = nonAdminTotal;
+          
+          // Populate users table
+          const usersTableBody = document.querySelector('#usersTable tbody');
+          usersTableBody.innerHTML = ''; // Clear existing rows
+          
+          data.users.forEach(user => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${user.user_id}</td>
+              <td>${user.role}</td>
+              <td>${user.first_name} ${user.last_name}</td>
+            `;
+            usersTableBody.appendChild(row);
+          });
+        })
+        .catch(error => {
+          document.getElementById('apiResponse').textContent = 'Error: ' + error.message;
+          console.error('Fetch error:', error);
+        });
+    });
+  </script>
+</body>
+</html> 

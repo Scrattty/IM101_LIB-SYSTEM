@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Books - Library Management System</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/admin.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="../assets/logo.png" alt="Library Logo" class="sidebar-logo">
+        <h3>Library System</h3>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <ul>
+          <li>
+            <a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+          </li>
+          <li>
+            <a href="manage-members.html"><i class="fas fa-users"></i> Manage Members</a>
+          </li>
+          <li class="active">
+            <a href="manage-books.html"><i class="fas fa-book"></i> Manage Books</a>
+          </li>
+          <li>
+            <a href="book-requests.html"><i class="fas fa-book-reader"></i> Book Requests</a>
+          </li>
+          <li>
+            <a href="room-requests.html"><i class="fas fa-door-open"></i> Room Requests</a>
+          </li>
+          <li>
+            <a href="announcements.html"><i class="fas fa-bullhorn"></i> Announcements</a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Navigation -->
+      <header class="top-nav">
+        <div class="search-container">
+          <input type="text" placeholder="Search...">
+          <button type="button"><i class="fas fa-search"></i></button>
+        </div>
+        
+        <div class="user-menu">
+          <div class="notifications">
+            <button class="icon-btn"><i class="fas fa-bell"></i></button>
+          </div>
+          
+          <div class="profile-dropdown">
+            <button class="profile-toggle">
+              <img src="../assets/images/default-profile.png" alt="Profile" id="user-profile-img">
+              <span id="user-name">Admin User</span>
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            
+            <div class="dropdown-menu">
+              <a href="#" id="edit-profile"><i class="fas fa-user-edit"></i> Edit Profile</a>
+              <a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+          </div>
+        </div>
+      </header>
+      
+      <!-- Content Area -->
+      <div class="content">
+        <div class="content-header">
+          <h1 class="page-title">Manage Books</h1>
+          <button class="btn btn-primary" id="add-book-btn">
+            <i class="fas fa-plus"></i> Add New Book
+          </button>
+        </div>
+        
+        <!-- Book Categories -->
+        <div class="category-filter">
+          <button class="category-btn active" data-category="all">All</button>
+          <button class="category-btn" data-category="san-bartolome">San Bartolome</button>
+          <button class="category-btn" data-category="san-francisco">San Francisco</button>
+          <button class="category-btn" data-category="batasan">Batasan</button>
+        </div>
+        
+        <!-- Filter and Search -->
+        <div class="card">
+          <div class="card-header">
+            <div class="filter-container">
+              <label for="subject-filter">Subject:</label>
+              <select id="subject-filter" class="form-control sm">
+                <option value="all">All Subjects</option>
+                <option value="computer-science">Computer Science</option>
+                <option value="engineering">Engineering</option>
+                <option value="mathematics">Mathematics</option>
+                <option value="science">Science</option>
+                <option value="humanities">Humanities</option>
+              </select>
+              
+              <label for="availability-filter">Availability:</label>
+              <select id="availability-filter" class="form-control sm">
+                <option value="all">All</option>
+                <option value="available">Available</option>
+                <option value="low-stock">Low Stock</option>
+                <option value="out-of-stock">Out of Stock</option>
+              </select>
+              
+              <button class="btn btn-primary sm">Apply Filters</button>
+              <button class="btn btn-secondary sm">Reset</button>
+            </div>
+          </div>
+          
+          <div class="card-body">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Image</th>
+                  <th>Title</th>
+                  <th>Author</th>
+                  <th>ISBN</th>
+                  <th>Subject</th>
+                  <th>Location</th>
+                  <th>Stock</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <img src="https://covers.openlibrary.org/b/id/8091016-S.jpg" alt="Book Cover" class="book-thumbnail">
+                  </td>
+                  <td>Introduction to Algorithms</td>
+                  <td>Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, Clifford Stein</td>
+                  <td>9780262033848</td>
+                  <td>Computer Science</td>
+                  <td data-location="san-bartolome">San Bartolome</td>
+                  <td><span class="stock-badge good">15</span></td>
+                  <td>
+                    <button class="btn-icon" title="View Details"><i class="fas fa-eye"></i></button>
+                    <button class="btn-icon" title="Edit"><i class="fas fa-edit"></i></button>
+                    <button class="btn-icon" title="Delete"><i class="fas fa-trash"></i></button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <img src="https://covers.openlibrary.org/b/id/8522667-S.jpg" alt="Book Cover" class="book-thumbnail">
+                  </td>
+                  <td>Clean Code: A Handbook of Agile Software Craftsmanship</td>
+                  <td>Robert C. Martin</td>
+                  <td>9780132350884</td>
+                  <td>Computer Science</td>
+                  <td data-location="san-francisco">San Francisco</td>
+                  <td><span class="stock-badge low">3</span></td>
+                  <td>
+                    <button class="btn-icon" title="View Details"><i class="fas fa-eye"></i></button>
+                    <button class="btn-icon" title="Edit"><i class="fas fa-edit"></i></button>
+                    <button class="btn-icon" title="Delete"><i class="fas fa-trash"></i></button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <img src="https://covers.openlibrary.org/b/id/8051880-S.jpg" alt="Book Cover" class="book-thumbnail">
+                  </td>
+                  <td>Artificial Intelligence: A Modern Approach</td>
+                  <td>Stuart Russell, Peter Norvig</td>
+                  <td>9780134610993</td>
+                  <td>Computer Science</td>
+                  <td data-location="batasan">Batasan</td>
+                  <td><span class="stock-badge out">0</span></td>
+                  <td>
+                    <button class="btn-icon" title="View Details"><i class="fas fa-eye"></i></button>
+                    <button class="btn-icon" title="Edit"><i class="fas fa-edit"></i></button>
+                    <button class="btn-icon" title="Delete"><i class="fas fa-trash"></i></button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <img src="https://covers.openlibrary.org/b/id/8059570-S.jpg" alt="Book Cover" class="book-thumbnail">
+                  </td>
+                  <td>Database System Concepts</td>
+                  <td>Abraham Silberschatz, Henry F. Korth, S. Sudarshan</td>
+                  <td>9780073523323</td>
+                  <td>Computer Science</td>
+                  <td data-location="san-bartolome">San Bartolome</td>
+                  <td><span class="stock-badge good">12</span></td>
+                  <td>
+                    <button class="btn-icon" title="View Details"><i class="fas fa-eye"></i></button>
+                    <button class="btn-icon" title="Edit"><i class="fas fa-edit"></i></button>
+                    <button class="btn-icon" title="Delete"><i class="fas fa-trash"></i></button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <img src="https://covers.openlibrary.org/b/id/10701936-S.jpg" alt="Book Cover" class="book-thumbnail">
+                  </td>
+                  <td>Calculus: Early Transcendentals</td>
+                  <td>James Stewart</td>
+                  <td>9781285741550</td>
+                  <td>Mathematics</td>
+                  <td data-location="san-francisco">San Francisco</td>
+                  <td><span class="stock-badge good">20</span></td>
+                  <td>
+                    <button class="btn-icon" title="View Details"><i class="fas fa-eye"></i></button>
+                    <button class="btn-icon" title="Edit"><i class="fas fa-edit"></i></button>
+                    <button class="btn-icon" title="Delete"><i class="fas fa-trash"></i></button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            
+            <div class="pagination">
+              <button class="pagination-btn"><i class="fas fa-chevron-left"></i></button>
+              <button class="pagination-btn active">1</button>
+              <button class="pagination-btn">2</button>
+              <button class="pagination-btn">3</button>
+              <span class="pagination-ellipsis">...</span>
+              <button class="pagination-btn">10</button>
+              <button class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    
+    <!-- Add/Edit Book Modal -->
+    <div class="modal" id="book-modal">
+      <div class="modal-content large">
+        <div class="modal-header">
+          <h2 id="book-modal-title">Add New Book</h2>
+          <button class="close-modal">&times;</button>
+        </div>
+        
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="book-title">Book Title</label>
+              <input type="text" id="book-title" class="form-control">
+            </div>
+            
+            <div class="form-group">
+              <label for="book-author">Author(s)</label>
+              <input type="text" id="book-author" class="form-control" placeholder="Separate multiple authors with commas">
+            </div>
+            
+            <div class="form-group">
+              <label for="book-isbn">ISBN</label>
+              <input type="text" id="book-isbn" class="form-control">
+            </div>
+            
+            <div class="form-group">
+              <label for="book-publisher">Publisher</label>
+              <input type="text" id="book-publisher" class="form-control">
+            </div>
+            
+            <div class="form-group">
+              <label for="book-year">Publication Year</label>
+              <input type="number" id="book-year" class="form-control">
+            </div>
+            
+            <div class="form-group">
+              <label for="book-edition">Edition</label>
+              <input type="text" id="book-edition" class="form-control">
+            </div>
+            
+            <div class="form-group">
+              <label for="book-subject">Subject</label>
+              <select id="book-subject" class="form-control">
+                <option value="">Select a Subject</option>
+                <option value="computer-science">Computer Science</option>
+                <option value="engineering">Engineering</option>
+                <option value="mathematics">Mathematics</option>
+                <option value="science">Science</option>
+                <option value="humanities">Humanities</option>
+                <option value="social-sciences">Social Sciences</option>
+                <option value="arts">Arts</option>
+                <option value="business">Business</option>
+                <option value="medicine">Medicine</option>
+                <option value="law">Law</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label for="book-location">Location</label>
+              <select id="book-location" class="form-control">
+                <option value="">Select a Location</option>
+                <option value="san-bartolome">San Bartolome</option>
+                <option value="san-francisco">San Francisco</option>
+                <option value="batasan">Batasan</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label for="book-copies">Number of Copies</label>
+              <input type="number" id="book-copies" class="form-control" min="0">
+            </div>
+            
+            <div class="form-group">
+              <label for="book-image">Book Cover Image</label>
+              <input type="file" id="book-image" class="form-control" accept="image/*">
+            </div>
+            
+            <div class="form-group full-width">
+              <label for="book-description">Description</label>
+              <textarea id="book-description" class="form-control" rows="4"></textarea>
+            </div>
+          </div>
+        </div>
+        
+        <div class="modal-footer">
+          <button class="btn btn-secondary close-modal">Cancel</button>
+          <button class="btn btn-primary" id="save-book">Save Book</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="delete-modal">
+      <div class="modal-content small">
+        <div class="modal-header">
+          <h2>Confirm Deletion</h2>
+          <button class="close-modal">&times;</button>
+        </div>
+        
+        <div class="modal-body">
+          <p>Are you sure you want to delete this book? This action cannot be undone.</p>
+          <p id="delete-book-title" class="font-bold"></p>
+        </div>
+        
+        <div class="modal-footer">
+          <button class="btn btn-secondary close-modal">Cancel</button>
+          <button class="btn btn-danger" id="confirm-delete">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Edit Modal -->
+  <div class="modal" id="profile-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Edit Profile</h2>
+        <button class="close-modal">&times;</button>
+      </div>
+      
+      <div class="modal-body">
+        <form id="profile-form">
+          <div class="profile-photo-container">
+            <img src="../assets/images/default-profile.png" alt="Profile Photo" id="profile-preview">
+            <div class="photo-upload">
+              <label for="profile-photo" class="btn btn-secondary">
+                <i class="fas fa-camera"></i> Change Photo
+              </label>
+              <input type="file" id="profile-photo" accept="image/*" hidden>
+              <p class="help-text">Max file size: 2MB. Supported formats: JPG, PNG</p>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="profile-id">Student/Employee Number</label>
+            <div class="disabled-field">
+              <input type="text" id="profile-id" class="form-control" disabled readonly>
+              <i class="fas fa-lock"></i>
+            </div>
+            <p class="help-text">This is your permanent identification number and cannot be changed</p>
+          </div>
+          
+          <div class="form-group">
+            <label>Name</label>
+            <div class="name-fields">
+              <div class="form-group">
+                <input type="text" id="profile-lastname" class="form-control" placeholder="Last Name" required>
+              </div>
+              <div class="form-group">
+                <input type="text" id="profile-firstname" class="form-control" placeholder="First Name" required>
+              </div>
+              <div class="form-group">
+                <input type="text" id="profile-middlename" class="form-control" placeholder="Middle Name (Optional)">
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="profile-email">Email Address</label>
+            <input type="email" id="profile-email" class="form-control" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="profile-current-password">Current Password</label>
+            <input type="password" id="profile-current-password" class="form-control" required>
+            <p class="help-text">Enter your current password to confirm changes</p>
+          </div>
+          
+          <div class="form-group">
+            <label for="profile-new-password">New Password</label>
+            <input type="password" id="profile-new-password" class="form-control" minlength="8">
+            <p class="help-text">Leave blank to keep current password. Minimum 8 characters.</p>
+          </div>
+        </form>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancel-profile-edit">Cancel</button>
+        <button class="btn btn-primary" id="save-profile" form="profile-form">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/admin.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize user data
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      if (currentUser) {
+        // Update user name in the header
+        const userNameElements = document.querySelectorAll('#user-name');
+        userNameElements.forEach(element => {
+          element.textContent = `${currentUser.first_name} ${currentUser.last_name}` || 'User';
+        });
+        
+        // Update profile image if exists
+        const userProfileImg = document.getElementById('user-profile-img');
+        if (userProfileImg) {
+          if (currentUser.profile_image) {
+            userProfileImg.src = '../' + currentUser.profile_image;
+          } else {
+            userProfileImg.src = `../assets/images/default-profile.php?name=${encodeURIComponent(currentUser.first_name)}`;
+          }
+        }
+      }
+
+      // Edit Profile Modal Functionality
+      const editProfileBtn = document.getElementById('edit-profile');
+      const profileModal = document.getElementById('profile-modal');
+      const closeModalButtons = document.querySelectorAll('.close-modal');
+      const cancelProfileEdit = document.getElementById('cancel-profile-edit');
+      const saveProfileBtn = document.getElementById('save-profile');
+      const profilePhoto = document.getElementById('profile-photo');
+      const profilePreview = document.getElementById('profile-preview');
+      const userProfileImg = document.getElementById('user-profile-img');
+
+      // Open modal
+      if (editProfileBtn && profileModal) {
+        editProfileBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          console.log('Edit profile button clicked in manage books page');
+          
+          // Get current user data
+          const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+          if (!currentUser) {
+            console.error('No user data found in localStorage');
+            return;
+          }
+          
+          // Populate modal with user data
+          document.getElementById('profile-id').value = currentUser.student_employee_id || '';
+          document.getElementById('profile-lastname').value = currentUser.last_name || '';
+          document.getElementById('profile-firstname').value = currentUser.first_name || '';
+          document.getElementById('profile-middlename').value = currentUser.middle_name || '';
+          document.getElementById('profile-email').value = currentUser.email || '';
+          
+          // Set profile image if exists
+          if (currentUser.profile_image) {
+            profilePreview.src = '../' + currentUser.profile_image;
+          } else {
+            profilePreview.src = `../assets/images/default-profile.php?name=${encodeURIComponent(currentUser.first_name)}`;
+          }
+          
+          // Show modal
+          profileModal.classList.add('active');
+        });
+      }
+
+      // Close modal function
+      function closeProfileModal() {
+        profileModal.classList.remove('active');
+        // Clear password fields
+        document.getElementById('profile-current-password').value = '';
+        document.getElementById('profile-new-password').value = '';
+      }
+
+      // Close modal event listeners
+      if (closeModalButtons.length > 0) {
+        closeModalButtons.forEach(button => {
+          button.addEventListener('click', closeProfileModal);
+        });
+      }
+
+      if (cancelProfileEdit) {
+        cancelProfileEdit.addEventListener('click', closeProfileModal);
+      }
+
+      // Close modal when clicking outside
+      profileModal.addEventListener('click', function(e) {
+        if (e.target === profileModal) {
+          closeProfileModal();
+        }
+      });
+
+      // Profile photo upload
+      if (profilePhoto && profilePreview) {
+        profilePhoto.addEventListener('change', function() {
+          const file = this.files[0];
+          if (file) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+              const imageData = e.target.result;
+              profilePreview.src = imageData;
+            };
+            
+            reader.readAsDataURL(file);
+          }
+        });
+      }
+
+      // Save profile changes
+      if (saveProfileBtn) {
+        saveProfileBtn.addEventListener('click', function() {
+          // Get form fields
+          const lastName = document.getElementById('profile-lastname').value.trim();
+          const firstName = document.getElementById('profile-firstname').value.trim();
+          const middleName = document.getElementById('profile-middlename').value.trim();
+          const email = document.getElementById('profile-email').value.trim();
+          const currentPassword = document.getElementById('profile-current-password').value;
+          const newPassword = document.getElementById('profile-new-password').value;
+          
+          // Validation
+          if (!lastName || !firstName || !email || !currentPassword) {
+            alert('Please fill in all required fields.');
+            return;
+          }
+          
+          // Email validation
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(email)) {
+            alert('Please enter a valid email address.');
+            return;
+          }
+          
+          // Get current user data
+          const currentUser = JSON.parse(localStorage.getItem('currentUser')) || {};
+          
+          // Create FormData object for file upload
+          const formData = new FormData(document.getElementById('profile-form'));
+          
+          // Add user ID (required for API)
+          formData.append('user_id', currentUser.user_id);
+          
+          // Add profile data to form
+          formData.append('last_name', lastName);
+          formData.append('first_name', firstName);
+          formData.append('middle_name', middleName);
+          formData.append('email', email);
+          formData.append('current_password', currentPassword);
+          
+          // Add new password if provided
+          if (newPassword) {
+            formData.append('new_password', newPassword);
+          }
+          
+          // Send update request to API
+          fetch('../api/users/update_profile.php', {
+            method: 'POST',
+            body: formData // FormData automatically sets the correct Content-Type
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.status === 'success') {
+              // Update local storage with new user data
+              if (data.user) {
+                Object.assign(currentUser, data.user);
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+              }
+              
+              // Update displayed name
+              const userNameElements = document.querySelectorAll('#user-name');
+              userNameElements.forEach(element => {
+                element.textContent = `${firstName} ${lastName}`;
+              });
+              
+              // Update profile image if it exists in the response
+              if (data.user && data.user.profile_image) {
+                const userProfileImg = document.getElementById('user-profile-img');
+                if (userProfileImg) {
+                  userProfileImg.src = '../' + data.user.profile_image;
+                }
+              }
+              
+              // Show success message
+              alert('Profile updated successfully!');
+              
+              // Close modal and clear fields
+              closeProfileModal();
+            } else {
+              alert('Error: ' + data.message);
+            }
+          })
+          .catch(error => {
+            console.error('Error updating profile:', error);
+            alert('An error occurred while updating your profile. Please try again.');
+          });
+        });
+      }
+
+      // Get DOM elements
+      const categoryButtons = document.querySelectorAll('.category-btn');
+      const bookRows = document.querySelectorAll('.data-table tbody tr');
+      const searchInput = document.querySelector('.search-container input');
+      const subjectFilter = document.getElementById('subject-filter');
+      const availabilityFilter = document.getElementById('availability-filter');
+      const applyFiltersBtn = document.querySelector('.filter-container .btn-primary');
+      const resetFiltersBtn = document.querySelector('.filter-container .btn-secondary');
+
+      // Function to check stock status
+      function getStockStatus(stockElement) {
+        const stockText = stockElement.textContent.trim();
+        const stockNumber = parseInt(stockText);
+        
+        if (stockNumber === 0) return 'out-of-stock';
+        if (stockNumber <= 3) return 'low-stock';
+        return 'available';
+      }
+
+      // Function to normalize subject text for comparison
+      function normalizeSubject(subject) {
+        return subject.toLowerCase().replace(/\s+/g, '-');
+      }
+
+      // Function to apply all filters
+      function applyAllFilters() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        const selectedSubject = subjectFilter.value;
+        const selectedAvailability = availabilityFilter.value;
+        const activeLocation = document.querySelector('.category-btn.active').dataset.category;
+
+        console.log('Applying filters:', {
+          searchTerm,
+          selectedSubject,
+          selectedAvailability,
+          activeLocation
+        });
+
+        bookRows.forEach(row => {
+          // Get all searchable content
+          const title = row.cells[1].textContent.toLowerCase();
+          const author = row.cells[2].textContent.toLowerCase();
+          const isbn = row.cells[3].textContent.toLowerCase();
+          const subject = normalizeSubject(row.cells[4].textContent);
+          const location = row.cells[5].textContent.toLowerCase();
+          const stockStatus = getStockStatus(row.cells[6].querySelector('.stock-badge'));
+
+          // Check all filter conditions
+          const matchesSearch = searchTerm === '' || 
+            title.includes(searchTerm) ||
+            author.includes(searchTerm) ||
+            isbn.includes(searchTerm) ||
+            subject.includes(searchTerm) ||
+            location.includes(searchTerm);
+
+          const matchesSubject = selectedSubject === 'all' || 
+            normalizeSubject(selectedSubject) === subject;
+
+          const matchesAvailability = selectedAvailability === 'all' || 
+            stockStatus === selectedAvailability;
+
+          const matchesLocation = activeLocation === 'all' || 
+            row.cells[5].dataset.location === activeLocation;
+
+          // Show/hide row based on all conditions
+          row.style.display = (matchesSearch && matchesSubject && matchesAvailability && matchesLocation) ? '' : 'none';
+        });
+
+        // Update the subject filter options based on available subjects
+        updateSubjectFilterOptions();
+      }
+
+      // Function to update subject filter options based on visible rows
+      function updateSubjectFilterOptions() {
+        const visibleSubjects = new Set();
+        bookRows.forEach(row => {
+          if (row.style.display !== 'none') {
+            const subject = row.cells[4].textContent.trim();
+            visibleSubjects.add(subject);
+          }
+        });
+
+        // Update the subject filter options
+        const currentValue = subjectFilter.value;
+        subjectFilter.innerHTML = '<option value="all">All Subjects</option>';
+        
+        // Add options for each unique subject
+        Array.from(visibleSubjects).sort().forEach(subject => {
+          const option = document.createElement('option');
+          option.value = normalizeSubject(subject);
+          option.textContent = subject;
+          subjectFilter.appendChild(option);
+        });
+
+        // Restore the selected value if it still exists
+        if (currentValue && Array.from(visibleSubjects).some(s => normalizeSubject(s) === currentValue)) {
+          subjectFilter.value = currentValue;
+        }
+      }
+
+      // Add event listeners for filters
+      subjectFilter.addEventListener('change', function() {
+        console.log('Subject filter changed to:', this.value);
+        applyAllFilters();
+      });
+
+      availabilityFilter.addEventListener('change', applyAllFilters);
+
+      // Apply filters button
+      if (applyFiltersBtn) {
+        applyFiltersBtn.addEventListener('click', applyAllFilters);
+      }
+
+      // Reset filters button
+      if (resetFiltersBtn) {
+        resetFiltersBtn.addEventListener('click', function() {
+          // Reset all filters to default values
+          searchInput.value = '';
+          subjectFilter.value = 'all';
+          availabilityFilter.value = 'all';
+          
+          // Reset location filter to 'all'
+          categoryButtons.forEach(btn => {
+            if (btn.dataset.category === 'all') {
+              btn.classList.add('active');
+            } else {
+              btn.classList.remove('active');
+            }
+          });
+
+          // Apply the reset filters
+          applyAllFilters();
+        });
+      }
+
+      // Modify the existing search function to use applyAllFilters
+      function performSearch() {
+        applyAllFilters();
+      }
+
+      // Modify the existing filterByLocation function to use applyAllFilters
+      function filterByLocation(location) {
+        console.log('Filtering by location:', location);
+        
+        // Update active button state
+        categoryButtons.forEach(btn => {
+          if (btn.dataset.category === location) {
+            btn.classList.add('active');
+          } else {
+            btn.classList.remove('active');
+          }
+        });
+
+        // Apply all filters including the new location
+        applyAllFilters();
+      }
+
+      // Add event listeners
+      searchInput.addEventListener('input', performSearch);
+      categoryButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          filterByLocation(this.dataset.category);
+        });
+      });
+
+      // Initialize filters
+      applyAllFilters();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Request - Library Management System</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/student.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="../assets/logo.png" alt="Library Logo" class="sidebar-logo">
+        <h3>Library System</h3>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <ul>
+          <li>
+            <a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+          </li>
+          <li>
+            <a href="transactions.html"><i class="fas fa-exchange-alt"></i> Transactions</a>
+          </li>
+          <li class="active">
+            <a href="book-request.html"><i class="fas fa-book"></i> Book Request</a>
+          </li>
+          <li>
+            <a href="room-reservation.html"><i class="fas fa-door-open"></i> Room Reservation</a>
+          </li>
+
+          <li>
+            <a href="announcements.html"><i class="fas fa-bullhorn"></i> Announcements</a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Navigation -->
+      <header class="top-nav">
+        <div class="search-container">
+          <input type="text" placeholder="Search books...">
+          <button type="button"><i class="fas fa-search"></i></button>
+        </div>
+        
+        <div class="user-menu">
+          <div class="notifications">
+            <button class="icon-btn"><i class="fas fa-bell"></i></button>
+          </div>
+          
+          <div class="profile-dropdown">
+            <button class="profile-toggle">
+              <img src="../assets/images/default-profile.png" alt="Profile" id="user-profile-img">
+              <span id="user-name">Fatima Briones</span>
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            
+            <div class="dropdown-menu">
+              <a href="#" id="edit-profile"><i class="fas fa-user-edit"></i> Edit Profile</a>
+              <a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+          </div>
+        </div>
+      </header>
+      
+      <!-- Content Area -->
+      <div class="content">
+        <h1 class="page-title">Book Request</h1>
+        
+        <!-- Category Filter -->
+        <div class="filters-container">
+          <div class="category-filter">
+            <button class="category-btn active" data-category="all">All Types</button>
+            <button class="category-btn" data-category="physical">Physical Books</button>
+            <button class="category-btn" data-category="ebook">E-Books</button>
+          </div>
+          
+          <div class="location-filter">
+            <button class="location-btn active" data-location="all">All Locations</button>
+            <button class="location-btn" data-location="san-bartolome">San Bartolome</button>
+            <button class="location-btn" data-location="san-francisco">San Francisco</button>
+            <button class="location-btn" data-location="batasan">Batasan</button>
+          </div>
+        </div>
+        
+        <!-- Book Grid -->
+        <div class="book-grid">
+          <!-- Physical Book Card -->
+          <div class="book-card" data-category="physical" data-location="san-bartolome">
+            <div class="book-cover">
+              <img src="https://covers.openlibrary.org/b/id/8091016-L.jpg" alt="Book Cover">
+              <div class="book-status low-stock">
+                Low Stock: 3 copies
+              </div>
+              <div class="book-type">
+                <i class="fas fa-book" title="Physical Book"></i>
+              </div>
+            </div>
+            <div class="book-info">
+              <h3>Introduction to Algorithms</h3>
+              <p class="book-author">Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest</p>
+              <p class="book-details">
+                <span class="book-category">Computer Science</span>
+                <span class="book-location">San Bartolome</span>
+              </p>
+              <button class="btn btn-primary btn-block request-btn" 
+                      data-book-id="1" 
+                      data-book-title="Introduction to Algorithms"
+                      data-book-author="Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest"
+                      data-book-cover="https://covers.openlibrary.org/b/id/8091016-L.jpg"
+                      data-book-type="physical">
+                Request Book
+              </button>
+            </div>
+          </div>
+
+          <!-- E-Book Card -->
+          <div class="book-card" data-category="ebook" data-location="all">
+            <div class="book-cover">
+              <img src="https://covers.openlibrary.org/b/id/8091016-L.jpg" alt="Book Cover">
+              <div class="book-status available">
+                Available for Download
+              </div>
+              <div class="book-type">
+                <i class="fas fa-tablet-alt" title="E-Book"></i>
+              </div>
+            </div>
+            <div class="book-info">
+              <h3>Introduction to Algorithms</h3>
+              <p class="book-author">Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest</p>
+              <p class="book-details">
+                <span class="book-category">Computer Science</span>
+                <span class="book-format">E-Book</span>
+              </p>
+              <button class="btn btn-primary btn-block request-btn"
+                      data-book-id="1e"
+                      data-book-title="Introduction to Algorithms"
+                      data-book-author="Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest"
+                      data-book-cover="https://covers.openlibrary.org/b/id/8091016-L.jpg"
+                      data-book-type="ebook">
+                Request E-Book
+              </button>
+            </div>
+          </div>
+          
+          <!-- Physical Book Card -->
+          <div class="book-card" data-category="physical" data-location="san-francisco">
+            <div class="book-cover">
+              <img src="https://covers.openlibrary.org/b/id/8522667-L.jpg" alt="Book Cover">
+              <div class="book-status available">
+                Available: 15 copies
+              </div>
+              <div class="book-type">
+                <i class="fas fa-book" title="Physical Book"></i>
+              </div>
+            </div>
+            <div class="book-info">
+              <h3>Clean Code</h3>
+              <p class="book-author">Robert C. Martin</p>
+              <p class="book-details">
+                <span class="book-category">Computer Science</span>
+                <span class="book-location">San Francisco</span>
+              </p>
+              <button class="btn btn-primary btn-block request-btn"
+                      data-book-id="2"
+                      data-book-title="Clean Code"
+                      data-book-author="Robert C. Martin"
+                      data-book-cover="https://covers.openlibrary.org/b/id/8522667-L.jpg"
+                      data-book-type="physical">
+                Request Book
+              </button>
+            </div>
+          </div>
+
+          <!-- E-Book Card -->
+          <div class="book-card" data-category="ebook" data-location="all">
+            <div class="book-cover">
+              <img src="https://covers.openlibrary.org/b/id/8522667-L.jpg" alt="Book Cover">
+              <div class="book-status available">
+                Available for Download
+              </div>
+              <div class="book-type">
+                <i class="fas fa-tablet-alt" title="E-Book"></i>
+              </div>
+            </div>
+            <div class="book-info">
+              <h3>Clean Code</h3>
+              <p class="book-author">Robert C. Martin</p>
+              <p class="book-details">
+                <span class="book-category">Computer Science</span>
+                <span class="book-format">E-Book</span>
+              </p>
+              <button class="btn btn-primary btn-block request-btn"
+                      data-book-id="2e"
+                      data-book-title="Clean Code"
+                      data-book-author="Robert C. Martin"
+                      data-book-cover="https://covers.openlibrary.org/b/id/8522667-L.jpg"
+                      data-book-type="ebook">
+                Request E-Book
+              </button>
+            </div>
+          </div>
+          
+          <!-- Physical Book Card -->
+          <div class="book-card" data-category="physical" data-location="batasan">
+            <div class="book-cover">
+              <img src="https://covers.openlibrary.org/b/id/8051880-L.jpg" alt="Book Cover">
+              <div class="book-status out-of-stock">
+                Out of Stock
+              </div>
+              <div class="book-type">
+                <i class="fas fa-book" title="Physical Book"></i>
+              </div>
+            </div>
+            <div class="book-info">
+              <h3>Artificial Intelligence: A Modern Approach</h3>
+              <p class="book-author">Stuart Russell, Peter Norvig</p>
+              <p class="book-details">
+                <span class="book-category">Computer Science</span>
+                <span class="book-location">Batasan</span>
+              </p>
+              <button class="btn btn-secondary btn-block" disabled>Request Book</button>
+            </div>
+          </div>
+
+          <!-- E-Book Card -->
+          <div class="book-card" data-category="ebook" data-location="all">
+            <div class="book-cover">
+              <img src="https://covers.openlibrary.org/b/id/8051880-L.jpg" alt="Book Cover">
+              <div class="book-status available">
+                Available for Download
+              </div>
+              <div class="book-type">
+                <i class="fas fa-tablet-alt" title="E-Book"></i>
+              </div>
+            </div>
+            <div class="book-info">
+              <h3>Artificial Intelligence: A Modern Approach</h3>
+              <p class="book-author">Stuart Russell, Peter Norvig</p>
+              <p class="book-details">
+                <span class="book-category">Computer Science</span>
+                <span class="book-format">E-Book</span>
+              </p>
+              <button class="btn btn-primary btn-block request-btn"
+                      data-book-id="3e"
+                      data-book-title="Artificial Intelligence: A Modern Approach"
+                      data-book-author="Stuart Russell, Peter Norvig"
+                      data-book-cover="https://covers.openlibrary.org/b/id/8051880-L.jpg"
+                      data-book-type="ebook">
+                Request E-Book
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Pagination -->
+        <div class="pagination">
+          <button class="pagination-btn"><i class="fas fa-chevron-left"></i></button>
+          <button class="pagination-btn active">1</button>
+          <button class="pagination-btn">2</button>
+          <button class="pagination-btn">3</button>
+          <span class="pagination-ellipsis">...</span>
+          <button class="pagination-btn">10</button>
+          <button class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </main>
+    
+    <!-- Book Request Modal -->
+    <div class="modal" id="request-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="modal-request-title">Request Book</h2>
+          <button class="close-modal">&times;</button>
+        </div>
+        
+        <div class="modal-body">
+          <div class="book-preview">
+            <img src="" alt="Book Cover" id="modal-book-cover">
+            <div class="book-details">
+              <h3 id="modal-book-title"></h3>
+              <p id="modal-book-author"></p>
+              <p id="modal-book-type" class="book-type-label"></p>
+            </div>
+          </div>
+          
+          <div class="form-group" id="pickup-date-container">
+            <label for="pickup-date">Preferred Pickup Date</label>
+            <input type="date" id="pickup-date" class="form-control">
+            <p class="help-text">For physical books, please select a date to pick up your book.</p>
+          </div>
+          
+          <div class="form-group" id="email-container" style="display: none;">
+            <label for="email-confirm">Confirm Email for Notifications</label>
+            <input type="email" id="email-confirm" class="form-control" value="fatima.briones@example.edu" readonly>
+            <p class="help-text">We'll send you the download link for the e-book to this email address.</p>
+          </div>
+          
+          <div class="form-group">
+            <label for="request-notes">Notes (Optional)</label>
+            <textarea id="request-notes" class="form-control" rows="3" placeholder="Any special requests or notes"></textarea>
+          </div>
+          
+          <div class="agreement-checkbox">
+            <input type="checkbox" id="terms-agreement">
+            <label for="terms-agreement">I understand that all materials are for borrowing purposes only and may not be reproduced or distributed.</label>
+          </div>
+        </div>
+        
+        <div class="modal-footer">
+          <button class="btn btn-secondary close-modal">Cancel</button>
+          <button class="btn btn-primary" id="confirm-request" disabled>Submit Request</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Success Modal -->
+    <div class="modal" id="success-modal">
+      <div class="modal-content">
+        <div class="modal-header success">
+          <h2>Request Submitted!</h2>
+          <button class="close-modal">&times;</button>
+        </div>
+        
+        <div class="modal-body text-center">
+          <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <h3>Your request has been submitted successfully!</h3>
+          <p>We will notify you via email once your request has been processed.</p>
+          <p id="success-message"></p>
+        </div>
+        
+        <div class="modal-footer">
+          <button class="btn btn-success close-modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Profile Modal -->
+  <div class="modal" id="profile-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Edit Profile</h2>
+        <button class="close-modal">&times;</button>
+      </div>
+      
+      <div class="modal-body">
+        <form id="profile-form">
+          <div class="profile-photo-container">
+            <img src="../assets/images/default-profile.png" alt="Profile Photo" id="profile-preview">
+            <div class="photo-upload">
+              <label for="profile-photo" class="btn btn-secondary">
+                <i class="fas fa-camera"></i> Change Photo
+              </label>
+              <input type="file" id="profile-photo" accept="image/*" hidden>
+              <p class="help-text">Max file size: 2MB. Supported formats: JPG, PNG</p>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="profile-id">Student/Employee Number</label>
+            <div class="disabled-field">
+              <input type="text" id="profile-id" class="form-control" disabled readonly>
+              <i class="fas fa-lock"></i>
+            </div>
+            <p class="help-text">This is your permanent identification number and cannot be changed</p>
+          </div>
+          
+          <div class="form-group">
+            <label>Name</label>
+            <div class="name-fields">
+              <div class="form-group">
+                <input type="text" id="profile-lastname" class="form-control" placeholder="Last Name" required>
+              </div>
+              <div class="form-group">
+                <input type="text" id="profile-firstname" class="form-control" placeholder="First Name" required>
+              </div>
+              <div class="form-group">
+                <input type="text" id="profile-middlename" class="form-control" placeholder="Middle Name (Optional)">
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="profile-email">Email Address</label>
+            <input type="email" id="profile-email" class="form-control" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="profile-current-password">Current Password</label>
+            <input type="password" id="profile-current-password" class="form-control" required>
+            <p class="help-text">Enter your current password to confirm changes</p>
+          </div>
+          
+          <div class="form-group">
+            <label for="profile-new-password">New Password</label>
+            <input type="password" id="profile-new-password" class="form-control" minlength="8">
+            <p class="help-text">Leave blank to keep current password. Minimum 8 characters.</p>
+          </div>
+        </form>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancel-profile-edit">Cancel</button>
+        <button class="btn btn-primary" id="save-profile" form="profile-form">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../js/student.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize user data
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      if (currentUser) {
+        // Update user name in the header
+        const userNameElements = document.querySelectorAll('#user-name');
+        userNameElements.forEach(element => {
+          element.textContent = currentUser.name || 'User';
+        });
+        
+        // Update profile image if exists
+        const userProfileImg = document.getElementById('user-profile-img');
+        if (currentUser.profileImage && userProfileImg) {
+          userProfileImg.src = currentUser.profileImage;
+        }
+
+        // Update email in request modal if it exists
+        const emailConfirm = document.getElementById('email-confirm');
+        if (emailConfirm && currentUser.email) {
+          emailConfirm.value = currentUser.email;
+        }
+      }
+
+      // Edit Profile Modal Functionality
+      const editProfileBtn = document.getElementById('edit-profile');
+      const profileModal = document.getElementById('profile-modal');
+      const closeModalButtons = document.querySelectorAll('.close-modal');
+      const cancelProfileEdit = document.getElementById('cancel-profile-edit');
+      const saveProfileBtn = document.getElementById('save-profile');
+      const profilePhoto = document.getElementById('profile-photo');
+      const profilePreview = document.getElementById('profile-preview');
+      const userProfileImg = document.getElementById('user-profile-img');
+
+      // Open modal
+      if (editProfileBtn && profileModal) {
+        editProfileBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          console.log('Edit profile button clicked in book request page');
+          
+          // Get current user data
+          const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+          if (!currentUser) {
+            console.error('No user data found in localStorage');
+            return;
+          }
+          
+          // Populate modal with user data
+          document.getElementById('profile-id').value = currentUser.id || '';
+          document.getElementById('profile-lastname').value = currentUser.lastName || '';
+          document.getElementById('profile-firstname').value = currentUser.firstName || '';
+          document.getElementById('profile-middlename').value = currentUser.middleName || '';
+          document.getElementById('profile-email').value = currentUser.email || '';
+          
+          // Set profile image if exists
+          if (currentUser.profileImage) {
+            profilePreview.src = currentUser.profileImage;
+          }
+          
+          // Show modal
+          profileModal.classList.add('active');
+        });
+      }
+
+      // Close modal function
+      function closeProfileModal() {
+        profileModal.classList.remove('active');
+        // Clear password fields
+        document.getElementById('profile-current-password').value = '';
+        document.getElementById('profile-new-password').value = '';
+      }
+
+      // Close modal event listeners
+      if (closeModalButtons.length > 0) {
+        closeModalButtons.forEach(button => {
+          button.addEventListener('click', closeProfileModal);
+        });
+      }
+
+      if (cancelProfileEdit) {
+        cancelProfileEdit.addEventListener('click', closeProfileModal);
+      }
+
+      // Close modal when clicking outside
+      profileModal.addEventListener('click', function(e) {
+        if (e.target === profileModal) {
+          closeProfileModal();
+        }
+      });
+
+      // Profile photo upload
+      if (profilePhoto && profilePreview) {
+        profilePhoto.addEventListener('change', function() {
+          const file = this.files[0];
+          if (file) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+              const imageData = e.target.result;
+              profilePreview.src = imageData;
+              // Also update the header profile image
+              if (userProfileImg) {
+                userProfileImg.src = imageData;
+              }
+              
+              // Update user data in localStorage
+              const currentUser = JSON.parse(localStorage.getItem('currentUser')) || {};
+              currentUser.profileImage = imageData;
+              localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            };
+            
+            reader.readAsDataURL(file);
+          }
+        });
+      }
+
+      // Save profile changes
+      if (saveProfileBtn) {
+        saveProfileBtn.addEventListener('click', function() {
+          const lastName = document.getElementById('profile-lastname').value.trim();
+          const firstName = document.getElementById('profile-firstname').value.trim();
+          const middleName = document.getElementById('profile-middlename').value.trim();
+          const email = document.getElementById('profile-email').value.trim();
+          const currentPassword = document.getElementById('profile-current-password').value;
+          const newPassword = document.getElementById('profile-new-password').value;
+          
+          // Validation
+          if (!lastName || !firstName || !email || !currentPassword) {
+            alert('Please fill in all required fields.');
+            return;
+          }
+          
+          // Email validation
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(email)) {
+            alert('Please enter a valid email address.');
+            return;
+          }
+          
+          // Get current user data
+          const currentUser = JSON.parse(localStorage.getItem('currentUser')) || {};
+          
+          // Update user data
+          currentUser.lastName = lastName;
+          currentUser.firstName = firstName;
+          currentUser.middleName = middleName;
+          currentUser.email = email;
+          currentUser.name = `${firstName} ${lastName}`;
+          
+          // Save updated user data
+          localStorage.setItem('currentUser', JSON.stringify(currentUser));
+          
+          // Update displayed name
+          const userNameElements = document.querySelectorAll('#user-name');
+          userNameElements.forEach(element => {
+            element.textContent = currentUser.name;
+          });
+
+          // Update email in request modal if it exists
+          const emailConfirm = document.getElementById('email-confirm');
+          if (emailConfirm) {
+            emailConfirm.value = currentUser.email;
+          }
+          
+          // Show success message
+          alert('Profile updated successfully!');
+          
+          // Close modal and clear fields
+          closeProfileModal();
+        });
+      }
+    });
+  </script>
+</body>
+</html>
