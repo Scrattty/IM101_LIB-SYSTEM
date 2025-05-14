@@ -96,6 +96,75 @@
     .action-buttons .btn {
       flex: 1;
     }
+
+    .activity-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .activity-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 0.75rem;
+      background-color: var(--neutral-50);
+      border-radius: 0.5rem;
+    }
+
+    .activity-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.5rem;
+      height: 2.5rem;
+      background-color: var(--neutral-100);
+      border-radius: 50%;
+      color: var(--primary-600);
+    }
+
+    .activity-icon i {
+      font-size: 1.25rem;
+    }
+
+    .activity-details {
+      flex: 1;
+    }
+
+    .activity-details p {
+      margin: 0;
+      color: var(--neutral-900);
+      font-size: 0.875rem;
+      line-height: 1.5;
+    }
+
+    .activity-time {
+      display: block;
+      margin-top: 0.25rem;
+      color: var(--neutral-500);
+      font-size: 0.75rem;
+    }
+
+    /* Activity type specific colors */
+    .activity-item[data-type="book"] .activity-icon {
+      background-color: var(--primary-100);
+      color: var(--primary-600);
+    }
+
+    .activity-item[data-type="room"] .activity-icon {
+      background-color: var(--success-100);
+      color: var(--success-600);
+    }
+
+    .activity-item[data-type="user"] .activity-icon {
+      background-color: var(--warning-100);
+      color: var(--warning-600);
+    }
+
+    .activity-item[data-type="inventory"] .activity-icon {
+      background-color: var(--info-100);
+      color: var(--info-600);
+    }
   </style>
 </head>
 <body>
@@ -205,7 +274,7 @@
               <i class="fas fa-door-open"></i>
             </div>
             <div class="stat-details">
-              <h3>85</h3>
+              <h3 id="pending-room-count">0</h3>
               <p>Room Reservations</p>
             </div>
           </div>
@@ -707,6 +776,7 @@
       // Function to load room requests
       function loadRoomRequests() {
         const roomRequestsBody = document.getElementById('room-requests-body');
+        const pendingRoomCount = document.getElementById('pending-room-count');
         
         fetch('../api/rooms/admin_reservations.php')
           .then(response => {
@@ -718,6 +788,11 @@
           .then(data => {
             if (data.status === 'success') {
               roomRequestsBody.innerHTML = '';
+              
+              // Update the pending room count
+              if (pendingRoomCount) {
+                pendingRoomCount.textContent = data.reservations.length;
+              }
               
               if (data.reservations.length === 0) {
                 roomRequestsBody.innerHTML = `
@@ -845,12 +920,19 @@
                 
                 // Determine icon based on activity type
                 let icon = 'fa-info-circle';
-                if (activity.type === 'book') {
-                  icon = 'fa-book';
-                } else if (activity.type === 'room') {
-                  icon = 'fa-door-open';
-                } else if (activity.type === 'user') {
-                  icon = 'fa-user';
+                switch(activity.type) {
+                  case 'book':
+                    icon = activity.message.toLowerCase().includes('borrowed') ? 'fa-book' : 'fa-book-reader';
+                    break;
+                  case 'room':
+                    icon = 'fa-door-open';
+                    break;
+                  case 'user':
+                    icon = 'fa-user-plus';
+                    break;
+                  case 'inventory':
+                    icon = 'fa-boxes';
+                    break;
                 }
 
                 activityItem.innerHTML = `
