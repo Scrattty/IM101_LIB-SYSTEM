@@ -148,17 +148,7 @@
           
           <div class="card-body">
             <div class="announcement-list">
-              <div class="announcement-item">
-                <div class="announcement-date">Sep 20, 2023</div>
-                <h3>Library Hours Extended During Finals Week</h3>
-                <p>The library will remain open until midnight from October 1-15 to accommodate students during finals week. All services will be available during extended hours.</p>
-              </div>
-              
-              <div class="announcement-item">
-                <div class="announcement-date">Sep 15, 2023</div>
-                <h3>New Books Added to Collection</h3>
-                <p>We've added 50 new titles to our technology section. Come check them out!</p>
-              </div>
+              <!-- Announcements will be loaded dynamically -->
             </div>
           </div>
         </div>
@@ -524,6 +514,72 @@
           }
         });
       });
+
+      // Function to format date
+      function formatDate(dateString) {
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        return new Date(dateString).toLocaleDateString('en-US', options);
+      }
+
+      // Function to create announcement HTML
+      function createAnnouncementHTML(announcement) {
+        return `
+          <div class="announcement-item">
+            <div class="announcement-date">${formatDate(announcement.created_at)}</div>
+            <h3>${announcement.title}</h3>
+            <p>${announcement.content}</p>
+          </div>
+        `;
+      }
+
+      // Function to load announcements
+      async function loadAnnouncements() {
+        try {
+          const response = await fetch('../api/announcements.php', {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json'
+            },
+            credentials: 'include'
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to load announcements');
+          }
+
+          const announcements = await response.json();
+          const announcementList = document.querySelector('.announcement-list');
+          
+          if (announcements.length === 0) {
+            announcementList.innerHTML = `
+              <div class="announcement-item">
+                <p style="text-align: center; color: #666; font-style: italic;">
+                  No announcements available.
+                </p>
+              </div>
+            `;
+            return;
+          }
+
+          // Get only the latest 2 announcements
+          const latestAnnouncements = announcements.slice(0, 2);
+          announcementList.innerHTML = latestAnnouncements.map(createAnnouncementHTML).join('');
+
+        } catch (error) {
+          console.error('Error loading announcements:', error);
+          const announcementList = document.querySelector('.announcement-list');
+          announcementList.innerHTML = `
+            <div class="announcement-item">
+              <p style="text-align: center; color: #dc2626; font-style: italic;">
+                Failed to load announcements. Please try again later.
+              </p>
+            </div>
+          `;
+        }
+      }
+
+      // Load announcements when the page loads
+      loadAnnouncements();
     });
   </script>
 

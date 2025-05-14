@@ -74,15 +74,18 @@ try {
         sendErrorResponse("Not logged in. Please log in again.", 401);
     }
 
-    // Check if user is admin
-    if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    // Check user role and request method
+    $method = $_SERVER['REQUEST_METHOD'];
+    $requiresAdmin = in_array($method, ['POST', 'PUT', 'DELETE']);
+
+    if ($requiresAdmin && (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin')) {
         error_log("Session Debug - User is not admin. Role: " . ($_SESSION['role'] ?? 'not set'));
         error_log("Session Debug - Full session data: " . print_r($_SESSION, true));
         sendErrorResponse("Not authorized as admin", 401);
     }
 
     // Log successful authentication
-    error_log("User authenticated successfully. User ID: " . $_SESSION['user_id'] . ", Role: " . $_SESSION['role']);
+    error_log("User authenticated successfully. User ID: " . $_SESSION['user_id'] . ", Role: " . ($_SESSION['role'] ?? 'student'));
 
     // Create database connection
     $db = new Database();
