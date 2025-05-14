@@ -1,176 +1,469 @@
--- Create the database if it doesn't exist
-CREATE DATABASE IF NOT EXISTS library_db;
-USE library_db;
+-- phpMyAdmin SQL Dump
+-- version 4.8.5
+-- https://www.phpmyadmin.net/
+--
+-- Host: 127.0.0.1
+-- Generation Time: May 13, 2025 at 07:40 AM
+-- Server version: 10.1.38-MariaDB
+-- PHP Version: 7.3.2
 
--- Users table
-CREATE TABLE IF NOT EXISTS users (
-    user_id INT PRIMARY KEY AUTO_INCREMENT,
-    role ENUM('student', 'faculty', 'admin') NOT NULL,
-    student_employee_id VARCHAR(20) UNIQUE NOT NULL,
-    last_name VARCHAR(50) NOT NULL,
-    first_name VARCHAR(50) NOT NULL,
-    middle_name VARCHAR(50),
-    email VARCHAR(100) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    course VARCHAR(100),
-    year_level INT,
-    section VARCHAR(20),
-    profile_image VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
+SET time_zone = "+00:00";
 
--- Books table
-CREATE TABLE IF NOT EXISTS books (
-    book_id INT PRIMARY KEY AUTO_INCREMENT,
-    isbn VARCHAR(20) UNIQUE,
-    title VARCHAR(255) NOT NULL,
-    author VARCHAR(100) NOT NULL,
-    publisher VARCHAR(100),
-    publication_year INT,
-    category VARCHAR(50),
-    description TEXT,
-    total_copies INT NOT NULL DEFAULT 1,
-    available_copies INT NOT NULL DEFAULT 1,
-    book_type ENUM('physical', 'ebook') NOT NULL,
-    cover_image VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
 
--- Book Copies table (for physical books)
-CREATE TABLE IF NOT EXISTS book_copies (
-    copy_id INT PRIMARY KEY AUTO_INCREMENT,
-    book_id INT NOT NULL,
-    copy_number VARCHAR(20) NOT NULL,
-    status ENUM('available', 'borrowed', 'lost', 'damaged') NOT NULL DEFAULT 'available',
-    location VARCHAR(50),
-    notes TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (book_id) REFERENCES books(book_id) ON DELETE CASCADE,
-    UNIQUE KEY unique_copy (book_id, copy_number)
-);
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
 
--- Borrowing Transactions table
-CREATE TABLE IF NOT EXISTS borrowing_transactions (
-    transaction_id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    book_id INT NOT NULL,
-    copy_id INT,
-    transaction_type ENUM('borrow', 'return', 'reserve') NOT NULL,
-    borrow_date DATETIME NOT NULL,
-    due_date DATETIME NOT NULL,
-    return_date DATETIME,
-    status ENUM('pending', 'active', 'returned', 'overdue', 'cancelled') NOT NULL DEFAULT 'pending',
-    fine_amount DECIMAL(10,2) DEFAULT 0.00,
-    notes TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (book_id) REFERENCES books(book_id) ON DELETE CASCADE,
-    FOREIGN KEY (copy_id) REFERENCES book_copies(copy_id) ON DELETE SET NULL
-);
+--
+-- Database: `library_db`
+--
 
--- E-Book Access table
-CREATE TABLE IF NOT EXISTS ebook_access (
-    access_id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    book_id INT NOT NULL,
-    access_code VARCHAR(100) UNIQUE,
-    access_start DATETIME NOT NULL,
-    access_end DATETIME NOT NULL,
-    status ENUM('active', 'expired', 'revoked') NOT NULL DEFAULT 'active',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (book_id) REFERENCES books(book_id) ON DELETE CASCADE
-);
+-- --------------------------------------------------------
 
--- Fines table
-CREATE TABLE IF NOT EXISTS fines (
-    fine_id INT PRIMARY KEY AUTO_INCREMENT,
-    transaction_id INT NOT NULL,
-    user_id INT NOT NULL,
-    amount DECIMAL(10,2) NOT NULL,
-    reason ENUM('overdue', 'damage', 'loss') NOT NULL,
-    status ENUM('pending', 'paid', 'waived') NOT NULL DEFAULT 'pending',
-    payment_date DATETIME,
-    notes TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (transaction_id) REFERENCES borrowing_transactions(transaction_id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-);
+--
+-- Table structure for table `books`
+--
 
--- Notifications table
-CREATE TABLE IF NOT EXISTS notifications (
-    notification_id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    title VARCHAR(100) NOT NULL,
-    message TEXT NOT NULL,
-    type ENUM('due_reminder', 'overdue', 'reservation', 'system') NOT NULL,
-    is_read BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-);
+CREATE TABLE `books` (
+  `book_id` int(11) NOT NULL,
+  `isbn` varchar(20) DEFAULT NULL,
+  `title` varchar(255) NOT NULL,
+  `author` varchar(100) NOT NULL,
+  `publisher` varchar(100) DEFAULT NULL,
+  `publication_year` int(11) DEFAULT NULL,
+  `category` varchar(50) DEFAULT NULL,
+  `description` text,
+  `total_copies` int(11) NOT NULL DEFAULT '1',
+  `available_copies` int(11) NOT NULL DEFAULT '1',
+  `book_type` enum('physical','ebook') NOT NULL,
+  `cover_image` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Rooms table for library room management
-CREATE TABLE IF NOT EXISTS rooms (
-    room_id INT PRIMARY KEY AUTO_INCREMENT,
-    room_name VARCHAR(100) NOT NULL,
-    room_type VARCHAR(50) NOT NULL,
-    capacity INT NOT NULL DEFAULT 0,
-    description TEXT,
-    is_available BOOLEAN NOT NULL DEFAULT TRUE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
+-- --------------------------------------------------------
 
--- Room Reservations table for tracking room bookings
-CREATE TABLE IF NOT EXISTS room_reservations (
-    reservation_id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    room_id INT NOT NULL,
-    room_name VARCHAR(100) NOT NULL,
-    purpose TEXT NOT NULL,
-    reservation_date DATE NOT NULL,
-    start_time TIME NOT NULL,
-    end_time TIME NOT NULL,
-    status ENUM('pending', 'approved', 'rejected') NOT NULL DEFAULT 'pending',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (room_id) REFERENCES rooms(room_id) ON DELETE CASCADE
-);
+--
+-- Table structure for table `book_copies`
+--
 
--- Room Reservation Members table for group reservations
-CREATE TABLE IF NOT EXISTS room_reservation_members (
-    member_id INT PRIMARY KEY AUTO_INCREMENT,
-    reservation_id INT NOT NULL,
-    member_name VARCHAR(100) NOT NULL,
-    student_id VARCHAR(20) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (reservation_id) REFERENCES room_reservations(reservation_id) ON DELETE CASCADE
-);
+CREATE TABLE `book_copies` (
+  `copy_id` int(11) NOT NULL,
+  `book_id` int(11) NOT NULL,
+  `copy_number` varchar(20) NOT NULL,
+  `status` enum('available','borrowed','lost','damaged') NOT NULL DEFAULT 'available',
+  `location` varchar(50) DEFAULT NULL,
+  `notes` text,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Insert sample rooms
-INSERT INTO rooms (room_name, room_type, capacity, description, is_available) VALUES
-    ('Study Room 101', 'Study Room', 10, 'Small study room suitable for group discussions', 1),
-    ('Study Room 102', 'Study Room', 8, 'Small study room with whiteboard', 1),
-    ('Computer Lab 201', 'Computer Lab', 30, 'Computer laboratory with internet access', 1),
-    ('Library Conference Room', 'Conference Room', 20, 'Large conference room with projector', 1),
-    ('Reading Lounge', 'Lounge', 15, 'Quiet reading area with comfortable seating', 1);
+-- --------------------------------------------------------
 
--- Create indexes for better performance
-CREATE INDEX idx_books_title ON books(title);
-CREATE INDEX idx_books_author ON books(author);
-CREATE INDEX idx_books_category ON books(category);
-CREATE INDEX idx_transactions_status ON borrowing_transactions(status);
-CREATE INDEX idx_transactions_dates ON borrowing_transactions(borrow_date, due_date, return_date);
-CREATE INDEX idx_users_role ON users(role);
-CREATE INDEX idx_users_email ON users(email);
-CREATE INDEX idx_notifications_user_read ON notifications(user_id, is_read);
-CREATE INDEX idx_room_reservations_date ON room_reservations(reservation_date);
-CREATE INDEX idx_room_reservations_user ON room_reservations(user_id);
-CREATE INDEX idx_room_reservations_status ON room_reservations(status); 
+--
+-- Table structure for table `borrowing_transactions`
+--
+
+CREATE TABLE `borrowing_transactions` (
+  `transaction_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `book_id` int(11) NOT NULL,
+  `copy_id` int(11) DEFAULT NULL,
+  `transaction_type` enum('borrow','return','reserve') NOT NULL,
+  `borrow_date` datetime NOT NULL,
+  `due_date` datetime NOT NULL,
+  `return_date` datetime DEFAULT NULL,
+  `status` enum('pending','active','returned','overdue','cancelled') NOT NULL DEFAULT 'pending',
+  `fine_amount` decimal(10,2) DEFAULT '0.00',
+  `notes` text,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ebook_access`
+--
+
+CREATE TABLE `ebook_access` (
+  `access_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `book_id` int(11) NOT NULL,
+  `access_code` varchar(100) DEFAULT NULL,
+  `access_start` datetime NOT NULL,
+  `access_end` datetime NOT NULL,
+  `status` enum('active','expired','revoked') NOT NULL DEFAULT 'active',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `fines`
+--
+
+CREATE TABLE `fines` (
+  `fine_id` int(11) NOT NULL,
+  `transaction_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `reason` enum('overdue','damage','loss') NOT NULL,
+  `status` enum('pending','paid','waived') NOT NULL DEFAULT 'pending',
+  `payment_date` datetime DEFAULT NULL,
+  `notes` text,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `notifications`
+--
+
+CREATE TABLE `notifications` (
+  `notification_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `title` varchar(100) NOT NULL,
+  `message` text NOT NULL,
+  `type` enum('due_reminder','overdue','reservation','system') NOT NULL,
+  `is_read` tinyint(1) DEFAULT '0',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `reservation_members`
+--
+
+CREATE TABLE `reservation_members` (
+  `member_id` int(11) NOT NULL,
+  `reservation_id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `student_id` varchar(100) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `reservation_members`
+--
+
+INSERT INTO `reservation_members` (`member_id`, `reservation_id`, `name`, `student_id`, `created_at`) VALUES
+(6, 6, 'asd', 'asd', '2025-05-13 10:41:24'),
+(7, 6, 'asda', 'asd', '2025-05-13 10:41:24'),
+(8, 6, 'asd', 'asd', '2025-05-13 10:41:25'),
+(9, 6, 'asd', 'asd', '2025-05-13 10:41:25'),
+(10, 6, 'asd', 'asd', '2025-05-13 10:41:25'),
+(11, 7, 'asda', 'asd', '2025-05-13 10:43:40'),
+(12, 7, 'asd', '12', '2025-05-13 10:43:40'),
+(13, 7, '123', '123', '2025-05-13 10:43:40'),
+(14, 7, '123', '123', '2025-05-13 10:43:40'),
+(15, 7, '123', '123', '2025-05-13 10:43:40');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `rooms`
+--
+
+CREATE TABLE `rooms` (
+  `room_id` int(11) NOT NULL,
+  `room_name` varchar(100) NOT NULL,
+  `room_type` varchar(50) NOT NULL,
+  `capacity` int(11) NOT NULL DEFAULT '0',
+  `description` text,
+  `is_available` tinyint(1) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `rooms`
+--
+
+INSERT INTO `rooms` (`room_id`, `room_name`, `room_type`, `capacity`, `description`, `is_available`) VALUES
+(1, 'Study Room 101', 'Study Room', 10, 'Small study room suitable for group discussions', 1),
+(2, 'Study Room 102', 'Study Room', 10, 'Small study room with whiteboard', 1),
+(3, 'Computer Lab 201', 'Computer Lab', 10, 'Computer laboratory with internet access', 1),
+(4, 'Library Conference Room', 'Conference Room', 10, 'Large conference room with projector', 1),
+(5, 'Reading Lounge', 'Lounge', 10, 'Quiet reading area with comfortable seating', 1),
+(6, 'Study Room 101', 'Study Room', 10, 'Small study room suitable for group discussions', 1),
+(7, 'Study Room 102', 'Study Room', 10, 'Small study room with whiteboard', 1),
+(8, 'Computer Lab 201', 'Computer Lab', 10, 'Computer laboratory with internet access', 1),
+(9, 'Library Conference Room', 'Conference Room', 10, 'Large conference room with projector', 1),
+(10, 'Reading Lounge', 'Lounge', 10, 'Quiet reading area with comfortable seating', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `room_reservations`
+--
+
+CREATE TABLE `room_reservations` (
+  `reservation_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `room_id` int(11) DEFAULT NULL,
+  `room_name` varchar(50) DEFAULT NULL,
+  `purpose` text NOT NULL,
+  `reservation_date` date NOT NULL,
+  `start_time` time NOT NULL,
+  `end_time` time NOT NULL,
+  `status` enum('pending','approved','rejected') NOT NULL DEFAULT 'pending',
+  `admin_assign` tinyint(1) DEFAULT '0',
+  `created_at` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `room_reservations`
+--
+
+INSERT INTO `room_reservations` (`reservation_id`, `user_id`, `room_id`, `room_name`, `purpose`, `reservation_date`, `start_time`, `end_time`, `status`, `admin_assign`, `created_at`) VALUES
+(6, 2, NULL, NULL, 'group-study: test', '2025-05-15', '10:00:00', '11:00:00', 'rejected', 1, '2025-05-13 10:41:24'),
+(7, 4, NULL, NULL, 'group-study: test', '2025-05-14', '01:00:00', '02:00:00', 'pending', 1, '2025-05-13 10:43:40');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users`
+--
+
+CREATE TABLE `users` (
+  `user_id` int(11) NOT NULL,
+  `role` enum('student','faculty','admin') NOT NULL,
+  `student_employee_id` varchar(20) NOT NULL,
+  `last_name` varchar(50) NOT NULL,
+  `first_name` varchar(50) NOT NULL,
+  `middle_name` varchar(50) DEFAULT NULL,
+  `email` varchar(100) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `course` varchar(100) DEFAULT NULL,
+  `year_level` int(11) DEFAULT NULL,
+  `section` varchar(20) DEFAULT NULL,
+  `profile_image` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`user_id`, `role`, `student_employee_id`, `last_name`, `first_name`, `middle_name`, `email`, `password`, `course`, `year_level`, `section`, `profile_image`, `created_at`, `updated_at`) VALUES
+(2, 'admin', '23-2316', 'gatdula', 'ronnie', 'p', 'tagumpay.lolito.cuevas@gmail.com', '$2y$10$AqeHRTdquP9AUgm/Ibs8hum1NdhaZ2X7MlV7HEw55SZp/nIJ.edyC', '', 0, '', NULL, '2025-05-12 06:56:10', '2025-05-12 06:56:10'),
+(3, 'faculty', '23-2317', 'christine', 'angel', 'cuevas', 'christineangel@gmail.com', '$2y$10$sim0.D2ayj7m1yLvLuhLi.HlY0JPIQlNjIL/8gH9nQk1ZY/7hzCyS', '', 0, '', NULL, '2025-05-12 08:05:51', '2025-05-12 08:05:51'),
+(4, 'student', '23-2315', 'Tagumpay', 'Lolito', 'cuevas', 'lolitotagumpay@gmail.com', '$2y$10$JdQlike68gcZjYVtvax1heD7p7GxhT/YZQsgch.6Rr7KxUlBZVzgy', 'Bachelor of Science in Information Technology', 2, 'SBIT-2B', NULL, '2025-05-12 08:23:55', '2025-05-12 08:23:55');
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `books`
+--
+ALTER TABLE `books`
+  ADD PRIMARY KEY (`book_id`),
+  ADD UNIQUE KEY `isbn` (`isbn`),
+  ADD KEY `idx_books_title` (`title`),
+  ADD KEY `idx_books_author` (`author`),
+  ADD KEY `idx_books_category` (`category`);
+
+--
+-- Indexes for table `book_copies`
+--
+ALTER TABLE `book_copies`
+  ADD PRIMARY KEY (`copy_id`),
+  ADD UNIQUE KEY `unique_copy` (`book_id`,`copy_number`);
+
+--
+-- Indexes for table `borrowing_transactions`
+--
+ALTER TABLE `borrowing_transactions`
+  ADD PRIMARY KEY (`transaction_id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `book_id` (`book_id`),
+  ADD KEY `copy_id` (`copy_id`),
+  ADD KEY `idx_transactions_status` (`status`),
+  ADD KEY `idx_transactions_dates` (`borrow_date`,`due_date`,`return_date`);
+
+--
+-- Indexes for table `ebook_access`
+--
+ALTER TABLE `ebook_access`
+  ADD PRIMARY KEY (`access_id`),
+  ADD UNIQUE KEY `access_code` (`access_code`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `book_id` (`book_id`);
+
+--
+-- Indexes for table `fines`
+--
+ALTER TABLE `fines`
+  ADD PRIMARY KEY (`fine_id`),
+  ADD KEY `transaction_id` (`transaction_id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
+-- Indexes for table `notifications`
+--
+ALTER TABLE `notifications`
+  ADD PRIMARY KEY (`notification_id`),
+  ADD KEY `idx_notifications_user_read` (`user_id`,`is_read`);
+
+--
+-- Indexes for table `reservation_members`
+--
+ALTER TABLE `reservation_members`
+  ADD PRIMARY KEY (`member_id`),
+  ADD KEY `reservation_id` (`reservation_id`);
+
+--
+-- Indexes for table `rooms`
+--
+ALTER TABLE `rooms`
+  ADD PRIMARY KEY (`room_id`);
+
+--
+-- Indexes for table `room_reservations`
+--
+ALTER TABLE `room_reservations`
+  ADD PRIMARY KEY (`reservation_id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `room_id` (`room_id`),
+  ADD KEY `idx_room_reservations_date` (`reservation_date`),
+  ADD KEY `idx_room_reservations_user` (`user_id`),
+  ADD KEY `idx_room_reservations_status` (`status`);
+
+--
+-- Indexes for table `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`user_id`),
+  ADD UNIQUE KEY `student_employee_id` (`student_employee_id`),
+  ADD UNIQUE KEY `email` (`email`),
+  ADD KEY `idx_users_role` (`role`),
+  ADD KEY `idx_users_email` (`email`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `books`
+--
+ALTER TABLE `books`
+  MODIFY `book_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `book_copies`
+--
+ALTER TABLE `book_copies`
+  MODIFY `copy_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `borrowing_transactions`
+--
+ALTER TABLE `borrowing_transactions`
+  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `ebook_access`
+--
+ALTER TABLE `ebook_access`
+  MODIFY `access_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `fines`
+--
+ALTER TABLE `fines`
+  MODIFY `fine_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `notifications`
+--
+ALTER TABLE `notifications`
+  MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `reservation_members`
+--
+ALTER TABLE `reservation_members`
+  MODIFY `member_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+
+--
+-- AUTO_INCREMENT for table `rooms`
+--
+ALTER TABLE `rooms`
+  MODIFY `room_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT for table `room_reservations`
+--
+ALTER TABLE `room_reservations`
+  MODIFY `reservation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `users`
+--
+ALTER TABLE `users`
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `book_copies`
+--
+ALTER TABLE `book_copies`
+  ADD CONSTRAINT `book_copies_ibfk_1` FOREIGN KEY (`book_id`) REFERENCES `books` (`book_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `borrowing_transactions`
+--
+ALTER TABLE `borrowing_transactions`
+  ADD CONSTRAINT `borrowing_transactions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `borrowing_transactions_ibfk_2` FOREIGN KEY (`book_id`) REFERENCES `books` (`book_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `borrowing_transactions_ibfk_3` FOREIGN KEY (`copy_id`) REFERENCES `book_copies` (`copy_id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `ebook_access`
+--
+ALTER TABLE `ebook_access`
+  ADD CONSTRAINT `ebook_access_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `ebook_access_ibfk_2` FOREIGN KEY (`book_id`) REFERENCES `books` (`book_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `fines`
+--
+ALTER TABLE `fines`
+  ADD CONSTRAINT `fines_ibfk_1` FOREIGN KEY (`transaction_id`) REFERENCES `borrowing_transactions` (`transaction_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fines_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `notifications`
+--
+ALTER TABLE `notifications`
+  ADD CONSTRAINT `notifications_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `reservation_members`
+--
+ALTER TABLE `reservation_members`
+  ADD CONSTRAINT `reservation_members_ibfk_1` FOREIGN KEY (`reservation_id`) REFERENCES `room_reservations` (`reservation_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `room_reservations`
+--
+ALTER TABLE `room_reservations`
+  ADD CONSTRAINT `room_reservations_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `room_reservations_ibfk_2` FOREIGN KEY (`room_id`) REFERENCES `rooms` (`room_id`) ON DELETE CASCADE;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

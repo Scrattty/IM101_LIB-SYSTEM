@@ -159,15 +159,31 @@ class RoomReservation {
 
     // Get reservations by user ID
     public function getReservationsByUser() {
-        $query = "SELECT * FROM " . $this->table_name . " 
-                  WHERE user_id = :user_id
-                  ORDER BY reservation_date DESC, start_time ASC";
-                  
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":user_id", $this->user_id);
-        $stmt->execute();
-        
-        return $stmt;
+        try {
+            $query = "SELECT * FROM " . $this->table_name . " 
+                      WHERE user_id = :user_id
+                      ORDER BY reservation_date DESC, start_time ASC";
+                      
+            $stmt = $this->conn->prepare($query);
+            if (!$stmt) {
+                error_log("Failed to prepare query in getReservationsByUser for user_id: " . $this->user_id);
+                return null;
+            }
+            
+            $this->user_id = htmlspecialchars(strip_tags($this->user_id));
+            $stmt->bindParam(":user_id", $this->user_id);
+            
+            if (!$stmt->execute()) {
+                error_log("Failed to execute query in getReservationsByUser for user_id: " . $this->user_id);
+                return null;
+            }
+            
+            return $stmt;
+        } catch(PDOException $e) {
+            error_log("Database error in getReservationsByUser: " . $e->getMessage());
+            error_log("SQL state: " . $e->getCode());
+            return null;
+        }
     }
 
     // Update reservation status

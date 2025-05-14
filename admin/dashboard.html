@@ -57,6 +57,45 @@
         margin-right: 10px;
       }
     }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      text-transform: capitalize;
+    }
+
+    .status-badge.pending {
+      background-color: var(--warning-100);
+      color: var(--warning-700);
+    }
+
+    .status-badge.approved {
+      background-color: var(--success-100);
+      color: var(--success-700);
+    }
+
+    .status-badge.rejected {
+      background-color: var(--danger-100);
+      color: var(--danger-700);
+    }
+
+    .status-badge.cancelled {
+      background-color: var(--neutral-100);
+      color: var(--neutral-700);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .action-buttons .btn {
+      flex: 1;
+    }
   </style>
 </head>
 <body>
@@ -257,32 +296,15 @@
                     <th>Date</th>
                     <th>Time</th>
                     <th>Purpose</th>
-                    <th>Action</th>
+                    <th>Status</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr class="request-row room-request">
-                    <td>Emily Davis</td>
-                    <td>2023-0078</td>
-                    <td>Study Room 102</td>
-                    <td>2023-09-20</td>
-                    <td>13:00 - 15:00</td>
-                    <td>Group Study</td>
-                    <td>
-                      <button class="btn btn-success btn-sm">Approve</button>
-                      <button class="btn btn-danger btn-sm">Reject</button>
-                    </td>
-                  </tr>
-                  <tr class="request-row room-request">
-                    <td>James Wilson</td>
-                    <td>2023-0156</td>
-                    <td>Computer Lab 201</td>
-                    <td>2023-09-21</td>
-                    <td>10:00 - 12:00</td>
-                    <td>Programming Workshop</td>
-                    <td>
-                      <button class="btn btn-success btn-sm">Approve</button>
-                      <button class="btn btn-danger btn-sm">Reject</button>
+                <tbody id="room-requests-body">
+                  <!-- Room requests will be loaded dynamically -->
+                  <tr>
+                    <td colspan="7" class="text-center">
+                      <div class="loading-spinner"></div>
+                      Loading room requests...
                     </td>
                   </tr>
                 </tbody>
@@ -299,54 +321,14 @@
           </div>
           
           <div class="card-body">
-            <div class="activity-list">
+            <div class="activity-list" id="recent-activity-list">
+              <!-- Activities will be loaded dynamically -->
               <div class="activity-item">
                 <div class="activity-icon">
-                  <i class="fas fa-book"></i>
+                  <i class="fas fa-spinner fa-spin"></i>
                 </div>
                 <div class="activity-details">
-                  <p><strong>Michael Brown</strong> borrowed <strong>Clean Code</strong></p>
-                  <span class="activity-time">5 minutes ago</span>
-                </div>
-              </div>
-              
-              <div class="activity-item">
-                <div class="activity-icon">
-                  <i class="fas fa-door-open"></i>
-                </div>
-                <div class="activity-details">
-                  <p><strong>Sarah Johnson</strong> reserved <strong>Study Room 101</strong></p>
-                  <span class="activity-time">1 hour ago</span>
-                </div>
-              </div>
-              
-              <div class="activity-item">
-                <div class="activity-icon">
-                  <i class="fas fa-book-reader"></i>
-                </div>
-                <div class="activity-details">
-                  <p><strong>John Smith</strong> returned <strong>Introduction to Algorithms</strong></p>
-                  <span class="activity-time">3 hours ago</span>
-                </div>
-              </div>
-              
-              <div class="activity-item">
-                <div class="activity-icon">
-                  <i class="fas fa-user-plus"></i>
-                </div>
-                <div class="activity-details">
-                  <p><strong>Emily Davis</strong> registered as a new member</p>
-                  <span class="activity-time">Yesterday</span>
-                </div>
-              </div>
-              
-              <div class="activity-item">
-                <div class="activity-icon">
-                  <i class="fas fa-book-medical"></i>
-                </div>
-                <div class="activity-details">
-                  <p><strong>Admin User</strong> added 15 new books to inventory</p>
-                  <span class="activity-time">Yesterday</span>
+                  <p>Loading recent activities...</p>
                 </div>
               </div>
             </div>
@@ -721,6 +703,241 @@
 
       // Initial search to set up the view
       performRequestSearch();
+
+      // Function to load room requests
+      function loadRoomRequests() {
+        const roomRequestsBody = document.getElementById('room-requests-body');
+        
+        fetch('../api/rooms/admin_reservations.php')
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            return response.json();
+          })
+          .then(data => {
+            if (data.status === 'success') {
+              roomRequestsBody.innerHTML = '';
+              
+              if (data.reservations.length === 0) {
+                roomRequestsBody.innerHTML = `
+                  <tr>
+                    <td colspan="7" class="text-center">
+                      No pending room requests found.
+                    </td>
+                  </tr>
+                `;
+                return;
+              }
+
+              data.reservations.forEach(reservation => {
+                const row = document.createElement('tr');
+                row.className = 'request-row room-request';
+                
+                // Format date
+                const date = new Date(reservation.reservation_date);
+                const formattedDate = date.toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit'
+                });
+
+                // Format time
+                const formatTime = (time) => {
+                  return new Date(`2000-01-01T${time}`).toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                  });
+                };
+
+                row.innerHTML = `
+                  <td>${reservation.user_name}</td>
+                  <td>${reservation.student_id}</td>
+                  <td>${reservation.room_name || 'Pending Assignment'}</td>
+                  <td>${formattedDate}</td>
+                  <td>${formatTime(reservation.start_time)} - ${formatTime(reservation.end_time)}</td>
+                  <td>${reservation.purpose || 'Not specified'}</td>
+                  <td>
+                    <span class="status-badge ${reservation.status}">${reservation.status}</span>
+                  </td>
+                `;
+                
+                roomRequestsBody.appendChild(row);
+              });
+            } else {
+              roomRequestsBody.innerHTML = `
+                <tr>
+                  <td colspan="7" class="text-center text-danger">
+                    Failed to load room requests. Please try again later.
+                  </td>
+                </tr>
+              `;
+            }
+          })
+          .catch(error => {
+            console.error('Error loading room requests:', error);
+            roomRequestsBody.innerHTML = `
+              <tr>
+                <td colspan="7" class="text-center text-danger">
+                  Could not connect to the server. Please try again later.
+                </td>
+              </tr>
+            `;
+          });
+      }
+
+      // Function to handle room request approval/rejection
+      function handleRoomRequest(reservationId, action) {
+        const endpoint = action === 'approve' ? 'approve_reservation.php' : 'reject_reservation.php';
+        
+        fetch(`../api/rooms/${endpoint}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ reservation_id: reservationId })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            // Reload room requests
+            loadRoomRequests();
+            // Add to recent activity
+            addToRecentActivity(data.message);
+          } else {
+            alert(data.message || 'Failed to process request. Please try again.');
+          }
+        })
+        .catch(error => {
+          console.error('Error processing request:', error);
+          alert('Could not connect to the server. Please try again later.');
+        });
+      }
+
+      // Function to load recent activities
+      function loadRecentActivities() {
+        const activityList = document.getElementById('recent-activity-list');
+        
+        fetch('../api/transactions/recent.php')
+          .then(response => response.json())
+          .then(data => {
+            if (data.status === 'success') {
+              activityList.innerHTML = '';
+              
+              if (data.activities.length === 0) {
+                activityList.innerHTML = `
+                  <div class="activity-item">
+                    <div class="activity-icon">
+                      <i class="fas fa-info-circle"></i>
+                    </div>
+                    <div class="activity-details">
+                      <p>No recent activities found.</p>
+                    </div>
+                  </div>
+                `;
+                return;
+              }
+
+              data.activities.forEach(activity => {
+                const activityItem = document.createElement('div');
+                activityItem.className = 'activity-item';
+                
+                // Determine icon based on activity type
+                let icon = 'fa-info-circle';
+                if (activity.type === 'book') {
+                  icon = 'fa-book';
+                } else if (activity.type === 'room') {
+                  icon = 'fa-door-open';
+                } else if (activity.type === 'user') {
+                  icon = 'fa-user';
+                }
+
+                activityItem.innerHTML = `
+                  <div class="activity-icon">
+                    <i class="fas ${icon}"></i>
+                  </div>
+                  <div class="activity-details">
+                    <p>${activity.message}</p>
+                    <span class="activity-time">${activity.time_ago}</span>
+                  </div>
+                `;
+                
+                activityList.appendChild(activityItem);
+              });
+            } else {
+              activityList.innerHTML = `
+                <div class="activity-item">
+                  <div class="activity-icon">
+                    <i class="fas fa-exclamation-circle"></i>
+                  </div>
+                  <div class="activity-details">
+                    <p>Failed to load recent activities.</p>
+                  </div>
+                </div>
+              `;
+            }
+          })
+          .catch(error => {
+            console.error('Error loading recent activities:', error);
+            activityList.innerHTML = `
+              <div class="activity-item">
+                <div class="activity-icon">
+                  <i class="fas fa-exclamation-circle"></i>
+                </div>
+                <div class="activity-details">
+                  <p>Could not connect to the server.</p>
+                </div>
+              </div>
+            `;
+          });
+      }
+
+      // Function to add a new activity to the list
+      function addToRecentActivity(message) {
+        const activityList = document.getElementById('recent-activity-list');
+        const activityItem = document.createElement('div');
+        activityItem.className = 'activity-item';
+        
+        // Determine icon based on message content
+        let icon = 'fa-info-circle';
+        if (message.toLowerCase().includes('book')) {
+          icon = 'fa-book';
+        } else if (message.toLowerCase().includes('room')) {
+          icon = 'fa-door-open';
+        } else if (message.toLowerCase().includes('member')) {
+          icon = 'fa-user';
+        }
+
+        activityItem.innerHTML = `
+          <div class="activity-icon">
+            <i class="fas ${icon}"></i>
+          </div>
+          <div class="activity-details">
+            <p>${message}</p>
+            <span class="activity-time">Just now</span>
+          </div>
+        `;
+        
+        // Add to the top of the list
+        activityList.insertBefore(activityItem, activityList.firstChild);
+        
+        // Remove oldest activity if more than 5
+        const activities = activityList.querySelectorAll('.activity-item');
+        if (activities.length > 5) {
+          activityList.removeChild(activities[activities.length - 1]);
+        }
+      }
+
+      // Load initial data
+      loadRoomRequests();
+      loadRecentActivities();
+
+      // Refresh data every 30 seconds
+      setInterval(() => {
+        loadRoomRequests();
+        loadRecentActivities();
+      }, 30000);
     });
   </script>
 </body>

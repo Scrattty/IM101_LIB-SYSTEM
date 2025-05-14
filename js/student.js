@@ -511,25 +511,6 @@ function loadTransactions() {
             statusClass = 'completed';
           }
 
-          // Debug log for member count calculation
-          console.log('Reservation ID:', reservation.reservation_id);
-          console.log('Member count from API:', reservation.member_count);
-          console.log('Members array:', reservation.members);
-          console.log('Additional members:', reservation.additional_members);
-
-          // Calculate total members based on the actual API response structure
-          let totalMembers = 1; // Start with the main user
-          
-          // Add additional members if they exist in the API response
-          if (reservation.additional_members) {
-            totalMembers += parseInt(reservation.additional_members) || 0;
-          } else if (reservation.member_count) {
-            // Fallback to member_count if additional_members is not available
-            totalMembers = parseInt(reservation.member_count) || 1;
-          }
-
-          console.log('Calculated total members:', totalMembers);
-
           // Create row for "All" tab
           const allRow = document.createElement('tr');
           allRow.dataset.id = reservation.reservation_id;
@@ -559,7 +540,7 @@ function loadTransactions() {
             <td>${formattedDate}</td>
             <td>${reservation.start_time} - ${reservation.end_time}</td>
             <td>${reservation.purpose || 'Not specified'}</td>
-            <td>${totalMembers}</td>
+            <td>${reservation.member_count || 1}</td>
             <td><span class="status-badge ${statusClass}">${reservation.status}</span></td>
             <td>
               <button class="btn-icon" title="View Details"><i class="fas fa-eye"></i></button>
