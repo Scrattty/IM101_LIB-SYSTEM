@@ -416,280 +416,299 @@
   <script src="../js/student.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Initialize user data
-      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-      if (currentUser) {
-        // Update user name in the header
-        const userNameElements = document.querySelectorAll('#user-name');
-        userNameElements.forEach(element => {
-          element.textContent = currentUser.name || 'User';
+      // Function to fetch available books from the database
+      function fetchAvailableBooks() {
+        fetch('get_available_books.php')
+          .then(response => response.json())
+          .then(data => {
+            if (data.status === 'success') {
+              renderBooks(data.books);
+            } else {
+              console.error('Error fetching books:', data.message);
+              Swal.fire('Error', 'Failed to load books. Please try again later.', 'error');
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            Swal.fire('Error', 'Failed to load books. Please try again later.', 'error');
+          });
+      }
+
+      // Function to render books in the table
+      function renderBooks(books) {
+        const tbody = document.getElementById('books-table-body');
+        tbody.innerHTML = '';
+
+        books.forEach(book => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>
+              <img src="${book.image_path || 'https://covers.openlibrary.org/b/id/8091016-S.jpg'}" 
+                   alt="Book Cover" class="book-thumbnail">
+            </td>
+            <td>${book.title}</td>
+            <td>${book.authors}</td>
+            <td>${book.isbn || 'N/A'}</td>
+            <td>${book.subject}</td>
+            <td data-location="${book.location}">
+              ${book.location.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+            </td>
+            <td><span class="stock-badge ${getStockStatusClass(book.copies)}">${book.copies}</span></td>
+            <td>
+              <button class="btn-icon view-book" data-id="${book.id}" title="View Details">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button class="btn-icon request-book" data-id="${book.id}" title="Request Book">
+                <i class="fas fa-book-reader"></i>
+              </button>
+            </td>
+          `;
+          tbody.appendChild(row);
         });
-        
-        // Update profile image if exists
-        const userProfileImg = document.getElementById('user-profile-img');
-        if (currentUser.profileImage && userProfileImg) {
-          userProfileImg.src = currentUser.profileImage;
-        }
 
-        // Update email in request modal if it exists
-        const emailConfirm = document.getElementById('email-confirm');
-        if (emailConfirm && currentUser.email) {
-          emailConfirm.value = currentUser.email;
-        }
+        // Add event listeners for the buttons
+        addBookButtonListeners();
       }
 
-      // Modal Elements
-      const closeModalButtons = document.querySelectorAll('.close-modal');
-      const requestModal = document.getElementById('request-modal');
-      const successModal = document.getElementById('success-modal');
-      const profileModal = document.getElementById('profile-modal');
-      
-      // Book Request Modal Elements
-      const requestButtons = document.querySelectorAll('.request-btn');
-      const confirmRequestBtn = document.getElementById('confirm-request');
-      const termsAgreement = document.getElementById('terms-agreement');
-      const pickupDateContainer = document.getElementById('pickup-date-container');
-      const emailContainer = document.getElementById('email-container');
-
-      // Function to close all modals
-      function closeModals() {
-        requestModal.style.display = 'none';
-        successModal.style.display = 'none';
-        profileModal.classList.remove('active');
+      // Function to get stock status class
+      function getStockStatusClass(copies) {
+        const stock = parseInt(copies);
+        if (stock === 0) return 'out';
+        if (stock <= 3) return 'low';
+        return 'good';
       }
 
-      // Close modal when clicking close buttons
-      closeModalButtons.forEach(button => {
-        button.addEventListener('click', closeModals);
-      });
-
-      // Close modal when clicking outside
-      window.addEventListener('click', function(e) {
-        if (e.target === requestModal || e.target === successModal || e.target === profileModal) {
-          closeModals();
-        }
-      });
-
-      // Book Request Modal Functionality
-      function openRequestModal(bookData) {
-        // Set minimum date to today
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('pickup-date').min = today;
-        
-        // Populate modal with book data
-        document.getElementById('modal-book-cover').src = bookData.cover;
-        document.getElementById('modal-book-title').textContent = bookData.title;
-        document.getElementById('modal-book-author').textContent = bookData.author;
-        document.getElementById('modal-book-type').textContent = bookData.type === 'ebook' ? 'E-Book' : 'Physical Book';
-        
-        // Show/hide appropriate containers based on book type
-        if (bookData.type === 'ebook') {
-          pickupDateContainer.style.display = 'none';
-          emailContainer.style.display = 'block';
-        } else {
-          pickupDateContainer.style.display = 'block';
-          emailContainer.style.display = 'none';
-        }
-        
-        // Reset form
-        document.getElementById('request-notes').value = '';
-        document.getElementById('pickup-date').value = '';
-        termsAgreement.checked = false;
-        confirmRequestBtn.disabled = true;
-        
-        // Show modal
-        requestModal.style.display = 'block';
-      }
-
-      // Add click handlers for request buttons
-      requestButtons.forEach(button => {
-        button.addEventListener('click', function() {
-          const bookData = {
-            id: this.dataset.bookId,
-            title: this.dataset.bookTitle,
-            author: this.dataset.bookAuthor,
-            cover: this.dataset.bookCover,
-            type: this.dataset.bookType
-          };
-          openRequestModal(bookData);
+      // Function to add event listeners to book action buttons
+      function addBookButtonListeners() {
+        // View book details
+        document.querySelectorAll('.view-book').forEach(button => {
+          button.addEventListener('click', function() {
+            const bookId = this.dataset.id;
+            fetch(`get_book.php?id=${bookId}`)
+              .then(response => response.json())
+              .then(data => {
+                if (data.status === 'success') {
+                  const book = data.book;
+                  Swal.fire({
+                    title: book.title,
+                    html: `
+                      <div class="book-details" style="text-align: left;">
+                        <img src="${book.image_path || 'https://covers.openlibrary.org/b/id/8091016-S.jpg'}" 
+                             alt="Book Cover" style="max-width: 200px; margin-bottom: 20px;">
+                        <p><strong>Authors:</strong> ${book.authors}</p>
+                        <p><strong>ISBN:</strong> ${book.isbn || 'N/A'}</p>
+                        <p><strong>Publisher:</strong> ${book.publisher || 'N/A'}</p>
+                        <p><strong>Publication Year:</strong> ${book.publication_year || 'N/A'}</p>
+                        <p><strong>Edition:</strong> ${book.edition || 'N/A'}</p>
+                        <p><strong>Subject:</strong> ${book.subject}</p>
+                        <p><strong>Location:</strong> ${book.location.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</p>
+                        <p><strong>Copies Available:</strong> ${book.copies}</p>
+                        <p><strong>Description:</strong> ${book.description || 'No description available'}</p>
+                      </div>
+                    `,
+                    width: '600px',
+                    showCloseButton: true,
+                    showConfirmButton: false
+                  });
+                } else {
+                  Swal.fire('Error', 'Could not load book details', 'error');
+                }
+              })
+              .catch(error => {
+                console.error('Error:', error);
+                Swal.fire('Error', 'Could not load book details', 'error');
+              });
+          });
         });
-      });
 
-      // Enable/disable confirm button based on terms agreement
-      termsAgreement.addEventListener('change', function() {
-        confirmRequestBtn.disabled = !this.checked;
-      });
-
-      // Handle request submission
-      confirmRequestBtn.addEventListener('click', function() {
-        const bookType = document.getElementById('modal-book-type').textContent;
-        const pickupDate = document.getElementById('pickup-date').value;
-        const notes = document.getElementById('request-notes').value;
-        
-        // Validate pickup date for physical books
-        if (bookType === 'Physical Book' && !pickupDate) {
-          alert('Please select a pickup date for physical books.');
-          return;
-        }
-
-        // Show success modal with appropriate message
-        const successMessage = document.getElementById('success-message');
-        if (bookType === 'E-Book') {
-          successMessage.textContent = 'The download link will be sent to your email shortly.';
-        } else {
-          successMessage.textContent = `Please pick up your book on ${pickupDate}.`;
-        }
-
-        // Hide request modal and show success modal
-        requestModal.style.display = 'none';
-        successModal.style.display = 'block';
-      });
-
-      // Edit Profile Modal Functionality
-      const editProfileBtn = document.getElementById('edit-profile');
-      const cancelProfileEdit = document.getElementById('cancel-profile-edit');
-      const saveProfileBtn = document.getElementById('save-profile');
-      const profilePhoto = document.getElementById('profile-photo');
-      const profilePreview = document.getElementById('profile-preview');
-      const userProfileImg = document.getElementById('user-profile-img');
-
-      // Open profile modal
-      if (editProfileBtn && profileModal) {
-        editProfileBtn.addEventListener('click', function(e) {
-          e.preventDefault();
-          console.log('Edit profile button clicked in book request page');
-          
-          // Get current user data
-          const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-          if (!currentUser) {
-            console.error('No user data found in localStorage');
-            return;
-          }
-          
-          // Populate modal with user data
-          document.getElementById('profile-id').value = currentUser.id || '';
-          document.getElementById('profile-lastname').value = currentUser.lastName || '';
-          document.getElementById('profile-firstname').value = currentUser.firstName || '';
-          document.getElementById('profile-middlename').value = currentUser.middleName || '';
-          document.getElementById('profile-email').value = currentUser.email || '';
-          
-          // Set profile image if exists
-          if (currentUser.profileImage) {
-            profilePreview.src = currentUser.profileImage;
-          }
-          
-          // Show modal
-          profileModal.classList.add('active');
-        });
-      }
-
-      // Close modal function
-      function closeProfileModal() {
-        profileModal.classList.remove('active');
-        // Clear password fields
-        document.getElementById('profile-current-password').value = '';
-        document.getElementById('profile-new-password').value = '';
-      }
-
-      // Close modal event listeners
-      if (closeModalButtons.length > 0) {
-        closeModalButtons.forEach(button => {
-          button.addEventListener('click', closeProfileModal);
-        });
-      }
-
-      if (cancelProfileEdit) {
-        cancelProfileEdit.addEventListener('click', closeProfileModal);
-      }
-
-      // Close modal when clicking outside
-      profileModal.addEventListener('click', function(e) {
-        if (e.target === profileModal) {
-          closeProfileModal();
-        }
-      });
-
-      // Profile photo upload
-      if (profilePhoto && profilePreview) {
-        profilePhoto.addEventListener('change', function() {
-          const file = this.files[0];
-          if (file) {
-            const reader = new FileReader();
+        // Request book
+        document.querySelectorAll('.request-book').forEach(button => {
+          button.addEventListener('click', function() {
+            const bookId = this.dataset.id;
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
             
-            reader.onload = function(e) {
-              const imageData = e.target.result;
-              profilePreview.src = imageData;
-              // Also update the header profile image
-              if (userProfileImg) {
-                userProfileImg.src = imageData;
+            if (!currentUser) {
+              Swal.fire('Error', 'Please log in to request a book', 'error');
+              return;
+            }
+
+            Swal.fire({
+              title: 'Request Book',
+              text: 'Are you sure you want to request this book?',
+              icon: 'question',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Yes, request it!'
+            }).then((result) => {
+              if (result.isConfirmed) {
+                const formData = new FormData();
+                formData.append('book_id', bookId);
+                formData.append('user_id', currentUser.user_id);
+                
+                fetch('request_book.php', {
+                  method: 'POST',
+                  body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                  if (data.status === 'success') {
+                    Swal.fire('Success!', 'Book request submitted successfully!', 'success');
+                  } else {
+                    Swal.fire('Error!', data.message, 'error');
+                  }
+                })
+                .catch(error => {
+                  console.error('Error:', error);
+                  Swal.fire('Error!', 'Could not submit book request.', 'error');
+                });
               }
-              
-              // Update user data in localStorage
-              const currentUser = JSON.parse(localStorage.getItem('currentUser')) || {};
-              currentUser.profileImage = imageData;
-              localStorage.setItem('currentUser', JSON.stringify(currentUser));
-            };
-            
-            reader.readAsDataURL(file);
-          }
+            });
+          });
         });
       }
 
-      // Save profile changes
-      if (saveProfileBtn) {
-        saveProfileBtn.addEventListener('click', function() {
-          const lastName = document.getElementById('profile-lastname').value.trim();
-          const firstName = document.getElementById('profile-firstname').value.trim();
-          const middleName = document.getElementById('profile-middlename').value.trim();
-          const email = document.getElementById('profile-email').value.trim();
-          const currentPassword = document.getElementById('profile-current-password').value;
-          const newPassword = document.getElementById('profile-new-password').value;
-          
-          // Validation
-          if (!lastName || !firstName || !email || !currentPassword) {
-            alert('Please fill in all required fields.');
-            return;
+      // Initial load of books
+      fetchAvailableBooks();
+
+      // Get DOM elements for filters
+      const categoryButtons = document.querySelectorAll('.category-btn');
+      const searchInput = document.querySelector('.search-container input');
+      const subjectFilter = document.getElementById('subject-filter');
+      const availabilityFilter = document.getElementById('availability-filter');
+      const applyFiltersBtn = document.querySelector('.filter-container .btn-primary');
+      const resetFiltersBtn = document.querySelector('.filter-container .btn-secondary');
+
+      // Function to check stock status
+      function getStockStatus(stockElement) {
+        const stockText = stockElement.textContent.trim();
+        const stockNumber = parseInt(stockText);
+        
+        if (stockNumber === 0) return 'out-of-stock';
+        if (stockNumber <= 3) return 'low-stock';
+        return 'available';
+      }
+
+      // Function to normalize subject text for comparison
+      function normalizeSubject(subject) {
+        return subject.toLowerCase().replace(/\s+/g, '-');
+      }
+
+      // Function to apply all filters
+      function applyAllFilters() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        const selectedSubject = subjectFilter.value;
+        const selectedAvailability = availabilityFilter.value;
+        const activeLocation = document.querySelector('.category-btn.active').dataset.category;
+
+        const bookRows = document.querySelectorAll('#books-table-body tr');
+
+        bookRows.forEach(row => {
+          // Get all searchable content
+          const title = row.cells[1].textContent.toLowerCase();
+          const author = row.cells[2].textContent.toLowerCase();
+          const isbn = row.cells[3].textContent.toLowerCase();
+          const subject = normalizeSubject(row.cells[4].textContent);
+          const location = row.cells[5].textContent.toLowerCase();
+          const stockStatus = getStockStatus(row.cells[6].querySelector('.stock-badge'));
+
+          // Check all filter conditions
+          const matchesSearch = searchTerm === '' || 
+              title.includes(searchTerm) ||
+              author.includes(searchTerm) ||
+              isbn.includes(searchTerm) ||
+              subject.includes(searchTerm) ||
+              location.includes(searchTerm);
+
+          const matchesSubject = selectedSubject === 'all' || 
+              normalizeSubject(selectedSubject) === subject;
+
+          const matchesAvailability = selectedAvailability === 'all' || 
+              stockStatus === selectedAvailability;
+
+          const matchesLocation = activeLocation === 'all' || 
+              row.cells[5].dataset.location === activeLocation;
+
+          // Show/hide row based on all conditions
+          row.style.display = (matchesSearch && matchesSubject && matchesAvailability && matchesLocation) ? '' : 'none';
+        });
+
+        // Update the subject filter options based on available subjects
+        updateSubjectFilterOptions();
+      }
+
+      // Function to update subject filter options based on visible rows
+      function updateSubjectFilterOptions() {
+        const visibleSubjects = new Set();
+        const bookRows = document.querySelectorAll('#books-table-body tr');
+        
+        bookRows.forEach(row => {
+          if (row.style.display !== 'none') {
+            const subject = row.cells[4].textContent.trim();
+            visibleSubjects.add(subject);
           }
+        });
+
+        // Update the subject filter options
+        const currentValue = subjectFilter.value;
+        subjectFilter.innerHTML = '<option value="all">All Subjects</option>';
+        
+        // Add options for each unique subject
+        Array.from(visibleSubjects).sort().forEach(subject => {
+          const option = document.createElement('option');
+          option.value = normalizeSubject(subject);
+          option.textContent = subject;
+          subjectFilter.appendChild(option);
+        });
+
+        // Restore the selected value if it still exists
+        if (currentValue && Array.from(visibleSubjects).some(s => normalizeSubject(s) === currentValue)) {
+          subjectFilter.value = currentValue;
+        }
+      }
+
+      // Add event listeners for filters
+      subjectFilter.addEventListener('change', applyAllFilters);
+      availabilityFilter.addEventListener('change', applyAllFilters);
+
+      // Apply filters button
+      if (applyFiltersBtn) {
+        applyFiltersBtn.addEventListener('click', applyAllFilters);
+      }
+
+      // Reset filters button
+      if (resetFiltersBtn) {
+        resetFiltersBtn.addEventListener('click', function() {
+          // Reset all filters to default values
+          searchInput.value = '';
+          subjectFilter.value = 'all';
+          availabilityFilter.value = 'all';
           
-          // Email validation
-          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-          if (!emailRegex.test(email)) {
-            alert('Please enter a valid email address.');
-            return;
-          }
-          
-          // Get current user data
-          const currentUser = JSON.parse(localStorage.getItem('currentUser')) || {};
-          
-          // Update user data
-          currentUser.lastName = lastName;
-          currentUser.firstName = firstName;
-          currentUser.middleName = middleName;
-          currentUser.email = email;
-          currentUser.name = `${firstName} ${lastName}`;
-          
-          // Save updated user data
-          localStorage.setItem('currentUser', JSON.stringify(currentUser));
-          
-          // Update displayed name
-          const userNameElements = document.querySelectorAll('#user-name');
-          userNameElements.forEach(element => {
-            element.textContent = currentUser.name;
+          // Reset location filter to 'all'
+          categoryButtons.forEach(btn => {
+            if (btn.dataset.category === 'all') {
+              btn.classList.add('active');
+            } else {
+              btn.classList.remove('active');
+            }
           });
 
-          // Update email in request modal if it exists
-          const emailConfirm = document.getElementById('email-confirm');
-          if (emailConfirm) {
-            emailConfirm.value = currentUser.email;
-          }
-          
-          // Show success message
-          alert('Profile updated successfully!');
-          
-          // Close modal and clear fields
-          closeProfileModal();
+          // Apply the reset filters
+          applyAllFilters();
         });
       }
+
+      // Search input event listener
+      searchInput.addEventListener('input', applyAllFilters);
+
+      // Location filter event listeners
+      categoryButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          categoryButtons.forEach(btn => btn.classList.remove('active'));
+          this.classList.add('active');
+          applyAllFilters();
+        });
+      });
     });
   </script>
 </body>

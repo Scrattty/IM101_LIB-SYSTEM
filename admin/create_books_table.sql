@@ -1,0 +1,16 @@
+CREATE TABLE IF NOT EXISTS books (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(255) NOT NULL,
+    authors VARCHAR(255) NOT NULL,
+    isbn VARCHAR(20),
+    publisher VARCHAR(255),
+    publication_year VARCHAR(4),
+    edition VARCHAR(50),
+    subject VARCHAR(100) NOT NULL,
+    location VARCHAR(50) NOT NULL,
+    copies INT NOT NULL DEFAULT 0,
+    description TEXT,
+    image_path VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+); 
